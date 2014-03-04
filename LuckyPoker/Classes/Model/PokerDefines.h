@@ -359,11 +359,11 @@ struct PokerPlayerInfo
 
 struct PlayerManInfo
 {
-	unsigned int	m_nCurPlayerKey;
-	unsigned int	m_nCurPlayerIndex;
-	unsigned int	m_nSunPlayerIndex;
-	unsigned int	m_nLeftTopIndex;
-	unsigned int	m_nTurnIndex;
+	unsigned int	curPlayerKey;
+	unsigned int	curPlayerIndex;
+	unsigned int	sunPlayerIndex;
+	unsigned int	leftTopIndex;
+	unsigned int	turnIndex;
 	float thinkTime;
 
 	PlayerManInfo()
@@ -373,25 +373,25 @@ struct PlayerManInfo
 
 	void Init()
 	{
-		m_nCurPlayerKey = INVALID_PLAYER_INDEX;
+		curPlayerKey = INVALID_PLAYER_INDEX;
 		Clear();
 	}
 	void Clear()
 	{
-		m_nCurPlayerIndex = INVALID_PLAYER_INDEX;
-		m_nSunPlayerIndex = INVALID_PLAYER_INDEX;
-		m_nLeftTopIndex = INVALID_PLAYER_INDEX;
-		m_nTurnIndex = INVALID_PLAYER_INDEX;
+		curPlayerIndex = INVALID_PLAYER_INDEX;
+		sunPlayerIndex = INVALID_PLAYER_INDEX;
+		leftTopIndex = INVALID_PLAYER_INDEX;
+		turnIndex = INVALID_PLAYER_INDEX;
 		thinkTime = 0;
 	}
 };
 
 struct TableInfo
 {
-	unsigned int m_nSeedMoney;
-	unsigned int m_nTitleMoney;
-	unsigned int m_nCallMoney;
-	unsigned int m_nRaiseCount; // 레이스 카운트 이것으로 Both인지를 알수 있다.
+	unsigned int seedMoney;
+	unsigned int titleMoney;
+	unsigned int callMoney;
+	unsigned int raiseCount; // 레이스 카운트 이것으로 Both인지를 알수 있다.
 	TableInfo()
 	{
 		Init();
@@ -399,24 +399,24 @@ struct TableInfo
 
 	void Init()
 	{
-		m_nSeedMoney = 0;
+		seedMoney = 0;
 		Clear();
 	}
 
 	void Clear()
 	{
-		m_nTitleMoney = 0;
-		m_nCallMoney = 0;
-		m_nRaiseCount = 0;
+		titleMoney = 0;
+		callMoney = 0;
+		raiseCount = 0;
 	}
 
 	bool Changed(const TableInfo& rhs)
 	{
 		bool changed = false;
-		changed |= (m_nSeedMoney != rhs.m_nSeedMoney);
-		changed |= (m_nTitleMoney != rhs.m_nTitleMoney);
-		changed |= (m_nCallMoney != rhs.m_nCallMoney);
-		changed |= (m_nRaiseCount != rhs.m_nRaiseCount);
+		changed |= (seedMoney != rhs.seedMoney);
+		changed |= (titleMoney != rhs.titleMoney);
+		changed |= (callMoney != rhs.callMoney);
+		changed |= (raiseCount != rhs.raiseCount);
 
 		return changed;
 	}
@@ -425,7 +425,7 @@ struct TableInfo
 	{
 		szInformation[0] = 0;
 
-		sprintf(szInformation, " %d \n %d \n %d \n %d", m_nSeedMoney, m_nTitleMoney, m_nCallMoney, m_nRaiseCount);
+		sprintf(szInformation, " %d \n %d \n %d \n %d", seedMoney, titleMoney, callMoney, raiseCount);
 	}
 };
 #endif // __POKER_DEFINES_H__

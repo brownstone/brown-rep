@@ -22,7 +22,7 @@ bool Dealer::Init(PokerRule* rule, PlayerMan* playerMan)
     m_nLastWinnerIndex = 0;
     
 	m_kTableInfo.Init();
-	m_kTableInfo.m_nSeedMoney = 10;
+	m_kTableInfo.seedMoney = 10;
     return true;
 }
 
@@ -144,18 +144,18 @@ void Dealer::Settle()
         return;
     }
     
-    player.AddMoney(m_kTableInfo.m_nTitleMoney);
+    player.AddMoney(m_kTableInfo.titleMoney);
     ResetTitleMoney();
 }
 
 void Dealer::AddMoney(unsigned int money)
 {
-    m_kTableInfo.m_nTitleMoney += money;
+    m_kTableInfo.titleMoney += money;
 }
 
 unsigned int Dealer::GetSeedMoney()
 {
-    return m_kTableInfo.m_nSeedMoney;
+    return m_kTableInfo.seedMoney;
 }
 
 int Dealer::GetLastWinnerIndex()
@@ -165,7 +165,7 @@ int Dealer::GetLastWinnerIndex()
 
 void Dealer::ResetRaiseCount()
 {
-    m_kTableInfo.m_nRaiseCount = 0;
+    m_kTableInfo.raiseCount = 0;
 }
 
 void Dealer::CalcMoney(int betIndex)
@@ -191,7 +191,7 @@ void Dealer::CalcMoney(int betIndex)
 
 void Dealer::SetCallMoney(unsigned int money)
 {
-    m_kTableInfo.m_nCallMoney = money;
+    m_kTableInfo.callMoney = money;
 
 }
 void Dealer::ResetTitleMoney()
@@ -289,17 +289,17 @@ void Dealer::DoDeal(int betIndex)
 
 unsigned int Dealer::GetCallMoney()
 {
-    return m_kTableInfo.m_nCallMoney;
+    return m_kTableInfo.callMoney;
 }
 
 unsigned int Dealer::GetTitleMoney()
 {
-    return m_kTableInfo.m_nTitleMoney;
+    return m_kTableInfo.titleMoney;
 }
 
 void Dealer::AddRaiseCount()
 {
-    m_kTableInfo.m_nRaiseCount++;
+    m_kTableInfo.raiseCount++;
 }
 
 void Dealer::GetTableInfo(TableInfo& tableInfo)
