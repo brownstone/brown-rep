@@ -33,8 +33,10 @@ public:
 
 private:
 	void DisplayPlayer(int index, const PokerPlayerInfo& playerInfo);
+	void DisplayPlayerHandCards(int index, const PokerPlayerInfo& playerInfo);
 	void DisplayDealer(const TableInfo& tableInfo);
 	void DisplaySeq(PokerSequence seq);
+	void HideHandCards();
 
 private:
 	MainLogic* m_pMainLogic;

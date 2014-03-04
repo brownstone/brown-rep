@@ -201,6 +201,7 @@ struct PokerPlayerInfo
 	Betting			eBet4;
 	unsigned int	nLastBet4Money;
 	unsigned int	nTempBet4Money;
+	float			thinkTime;
 
 	PokerPlayerInfo()
 	{
@@ -211,6 +212,7 @@ struct PokerPlayerInfo
 	{
 		nPlayerKey = 0;
 		nTotalMoney = 0;
+		thinkTime = 0;
 
 		ClearBettingInfo();
 	}
@@ -240,6 +242,7 @@ struct PokerPlayerInfo
 		eBet4 = BETTING_NONE;
 		nLastBet4Money = 0;
 		nTempBet4Money = 0;
+		thinkTime = 0;
 	}
 
 	bool Changed(const PokerPlayerInfo& rhs)
@@ -361,6 +364,7 @@ struct PlayerManInfo
 	unsigned int	m_nSunPlayerIndex;
 	unsigned int	m_nLeftTopIndex;
 	unsigned int	m_nTurnIndex;
+	float thinkTime;
 
 	PlayerManInfo()
 	{
@@ -378,6 +382,7 @@ struct PlayerManInfo
 		m_nSunPlayerIndex = INVALID_PLAYER_INDEX;
 		m_nLeftTopIndex = INVALID_PLAYER_INDEX;
 		m_nTurnIndex = INVALID_PLAYER_INDEX;
+		thinkTime = 0;
 	}
 };
 

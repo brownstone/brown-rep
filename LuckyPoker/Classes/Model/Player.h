@@ -38,6 +38,9 @@ public:
     bool DoBet2();
     bool DoBet3();
     bool DoBet4();
+	void ResetThinkTime();
+	void SetThinkTime(int betIndex);
+	float GetThinkTime();
     
     bool IsDie() const;
 	bool IsSchoolMoneyDone() const;

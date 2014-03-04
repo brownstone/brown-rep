@@ -416,6 +416,23 @@ bool Player::DoBet4()
 	return bTurnOver;
 }
 
+
+void Player::ResetThinkTime()
+{
+	m_kPokerPlayerInfo.thinkTime = 0;
+
+}
+
+void Player::SetThinkTime(int betIndex)
+{
+	m_kPokerPlayerInfo.thinkTime = 2.0f;
+}
+
+float Player::GetThinkTime()
+{
+	return m_kPokerPlayerInfo.thinkTime;
+}
+
 unsigned int Player::GetTempBetMoney(int betIndex)
 {
     unsigned int tempBetMoney = 0;

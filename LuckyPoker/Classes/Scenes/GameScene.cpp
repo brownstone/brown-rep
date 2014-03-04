@@ -76,6 +76,8 @@ bool PlayerLayer::init()
 	{
 		return false;
 	}
+	CCLayerColor* background = CCLayerColor::create(ccc4(155, 155, 155, 255));
+	addChild(background);
 
 	CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 	CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
@@ -102,33 +104,47 @@ bool PlayerLayer::init()
 	playerPosX[4] = leftXPos;	playerPosY[4] = topYPos;
 
 
-	CCLabelTTF* pLabel = CCLabelTTF::create("Player 1", "Arial", 14);
+	CCLabelTTF* pLabel = CCLabelTTF::create("Player 1", "Arial", 20);
 	pLabel->setPosition(ccp(origin.x + playerPosX[0], origin.y + playerPosY[0]));
 	this->addChild(pLabel, 1, 0);
 
-	pLabel = CCLabelTTF::create("Player 2", "Arial", 14);
-	pLabel->setPosition(ccp(origin.x + playerPosX[1], origin.y + playerPosY[1]));
+	pLabel = CCLabelTTF::create("Player 2", "Arial", 20);
+	pLabel->setPosition(ccp(origin.x + playerPosX[1], origin.y + playerPosY[1] - 10));
 	this->addChild(pLabel, 1, 1);
 
-	pLabel = CCLabelTTF::create("Player 3", "Arial", 14);
+	pLabel = CCLabelTTF::create("Player 3", "Arial", 20);
 	pLabel->setPosition(ccp(origin.x + playerPosX[2], origin.y + playerPosY[2]));
 	this->addChild(pLabel, 1, 2);
 
-	pLabel = CCLabelTTF::create("Player 4", "Arial", 14);
-	pLabel->setPosition(ccp(origin.x + playerPosX[3], origin.y + playerPosY[3]));
+	pLabel = CCLabelTTF::create("Player 4", "Arial", 20);
+	pLabel->setPosition(ccp(origin.x + playerPosX[3], origin.y + playerPosY[3] - 10));
 	this->addChild(pLabel, 1, 3);
 
-	pLabel = CCLabelTTF::create("Player 5", "Arial", 14);
+	pLabel = CCLabelTTF::create("Player 5", "Arial", 20);
 	pLabel->setPosition(ccp(origin.x + playerPosX[4], origin.y + playerPosY[4]));
 	this->addChild(pLabel, 1, 4);
 
-	pLabel = CCLabelTTF::create("Dealer", "Arial", 14);
+	pLabel = CCLabelTTF::create("Dealer", "Arial", 20);
 	pLabel->setPosition(ccp(origin.x + midXPos, origin.y + topYPos - 50));
 	this->addChild(pLabel, 1, 10);
 
-	pLabel = CCLabelTTF::create("Sequence", "Arial", 14);
-	pLabel->setPosition(ccp(origin.x + midXPos, origin.y + midYPos));
+	pLabel = CCLabelTTF::create("Sequence", "Arial", 20);
+	pLabel->setPosition(ccp(origin.x + midXPos, origin.y + midYPos - 20));
 	this->addChild(pLabel, 1, 20);
+
+	{ // players hand card
+		static const int SMALL_CARD_WIDTH = 14;
+		for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+		{
+			for (int j = 0; j < MAX_OPENCARD_COUNT + MAX_HIDDENCARD_COUNT; j++)
+			{
+				CCSprite* cardImg = CCSprite::create();
+				cardImg->setPosition(ccp(playerPosX[i] + j * SMALL_CARD_WIDTH - 40, playerPosY[i] - 20));
+				cardImg->setVisible(false);
+				addChild(cardImg, 1, (i + 1) * 100 + j);
+			}
+		}
+	}
 
 	m_pMainLogic = InstanceMan::mainLogic->GetInstance();
 
@@ -180,6 +196,11 @@ void PlayerLayer::update(float delta)
 		if (changed)
 		{
 			DisplaySeq(seq);
+
+			if (seq == POKERSEQUENCE_START || seq == POKERSEQUENCE_RESULT)
+			{
+				HideHandCards();
+			}
 			m_kPokerSequence = seq;
 		}
 	}
@@ -195,8 +216,53 @@ void PlayerLayer::DisplayPlayer(int index, const PokerPlayerInfo& playerInfo)
 	sprintf(pszPlayerInfo, "player %d \n %s ", index, pszInfo);
 	CCLabelTTF *label = (CCLabelTTF *)getChildByTag(index);
 	label->setString(pszPlayerInfo);
+
+	DisplayPlayerHandCards(index, playerInfo);
 }
 
+void PlayerLayer::DisplayPlayerHandCards(int index, const PokerPlayerInfo& playerInfo)
+{
+	for (int i = 0; i < MAX_HIDDENCARD_COUNT + MAX_OPENCARD_COUNT; i++)
+	{
+		Card card;
+		if (i >= MAX_HIDDENCARD_COUNT) {
+			card = playerInfo.akOpenCard[i - MAX_HIDDENCARD_COUNT];
+		} 
+		else {
+			card = playerInfo.akHiddenCard[i];
+		}
+		if (card.GetCard() != Card::CARD_NONE)
+		{
+			int cardTag = (index + 1) * 100 + i;
+			CCSprite* cardSprite = (CCSprite*)getChildByTag(cardTag);
+			if (cardSprite->isVisible() == false)
+			{
+				static const int CARD_WIDTH = 20;
+				static const int CARD_HEIGHT = 40;
+
+				int cardY = card.GetPicture() * CARD_HEIGHT;
+				int cardX = card.GetNumber() * CARD_WIDTH;
+
+				cardSprite->setVisible(true);
+				cardSprite->initWithFile("Images/smallcards.png", CCRect(cardX, cardY, CARD_WIDTH, CARD_HEIGHT));
+			}
+		}
+	}
+}
+
+void PlayerLayer::HideHandCards()
+{
+	static const int SMALL_CARD_WIDTH = 20;
+	for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+	{
+		for (int j = 0; j < MAX_OPENCARD_COUNT + MAX_HIDDENCARD_COUNT; j++)
+		{
+			int cardTag = (i + 1) * 100 + j;
+			CCSprite* cardSprite = (CCSprite*)getChildByTag(cardTag);
+			cardSprite->setVisible(false);
+		}
+	}
+}
 
 void PlayerLayer::DisplayDealer(const TableInfo& tableInfo)
 {

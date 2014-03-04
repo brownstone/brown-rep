@@ -25,6 +25,7 @@ public:
 	bool IsSchoolMoneyDone();
     void DoChoice();
 	bool IsChoiceDone() const;
+	void EachPlayerBetting(int betIndex, float delta);
 	bool IsBet1Done() const;
 	bool IsBet2Done() const;
 	bool IsBet3Done() const;

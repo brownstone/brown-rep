@@ -92,6 +92,7 @@ void PlayerMan::Update(float delta)
         }
         case POKERSEQUENCE_BET1:
 		{
+			EachPlayerBetting(1, delta);
 			static float fDelayTime = 0.0f;
 			fDelayTime += delta;
 
@@ -237,6 +238,35 @@ void PlayerMan::Update(float delta)
 
         default:
             break;
+	}
+}
+
+void PlayerMan::EachPlayerBetting(int betIndex, float delta)
+{
+	float thinkTime = m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].GetThinkTime();
+	if (thinkTime < 0.1f) {
+		m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].SetThinkTime(betIndex);
+		thinkTime = m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].GetThinkTime();
+	}
+
+	m_kPlayerManInfo.thinkTime += delta;
+
+	if (m_kPlayerManInfo.thinkTime < thinkTime)
+	{
+		return;
+	}
+
+	if (m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].DoBet4()) {
+		unsigned int seedMoney = m_pkDealer->GetSeedMoney();
+		unsigned int callMoney = m_pkDealer->GetCallMoney();
+		unsigned int titleMoney = m_pkDealer->GetTitleMoney();
+		m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].CalcBetMoney(4, seedMoney, callMoney, titleMoney);
+
+		if (m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].IsRaiseUp(4)) {
+			m_pkDealer->AddRaiseCount();
+		}
+		SetTurnOver();
+		m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].ResetThinkTime();
 	}
 }
 
@@ -580,6 +610,7 @@ void PlayerMan::SetTurnOver()
 	}
 
 	m_kPlayerManInfo.m_nTurnIndex = uiNextTurnIndex;
+	m_kPlayerManInfo.thinkTime = 0;
 }
 
 void PlayerMan::GetPlayerInfo(PokerPlayerInfo playerInfos[])
