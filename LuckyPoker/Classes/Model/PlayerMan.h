@@ -21,6 +21,8 @@ public:
 
 	void Update(float delta);
 
+	void DoSchoolMoney();
+	bool IsSchoolMoneyDone();
     void DoChoice();
 	bool IsChoiceDone() const;
 	bool IsBet1Done() const;
@@ -32,6 +34,7 @@ public:
 	unsigned int GetMasterPlayerKey() const;
 	unsigned int GetCurPlayerKey() const;
 	unsigned int GetAlivePlayerCount() const;
+	bool IsLeaveAlone() const;
 	Player& GetPlayerByIndex(unsigned int index);
 	const Player& GetPlayerByIndex(unsigned int index) const;
 	unsigned int GetSunIndex() const;

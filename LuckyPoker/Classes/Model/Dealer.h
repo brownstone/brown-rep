@@ -32,6 +32,7 @@ protected:
     void ResetRaiseCount();
     void ResetTitleMoney();
     void Shuffle();
+	void CalcSchoolMoney();
     void DealFirstCard();
     void CalcMoney(int betIndex);
     void Settle();

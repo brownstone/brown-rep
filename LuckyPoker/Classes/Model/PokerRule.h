@@ -24,6 +24,8 @@ protected:
 	PokerSequence m_eCurPokerSequence;
     bool m_bSequenceChanged;
     float m_fAccumTime;
+
+	void ChangeToSequence(PokerSequence seq);
     
 private:
     void InitSequence();

@@ -57,7 +57,21 @@ void PlayerMan::Update(float delta)
 			//m_pkOwner->AddMoney(10, 4000);
 			break;
 		}
-        case POKERSEQUENCE_CHOICE:
+		case POKERSEQUENCE_SHUFFLE:
+		{
+			static float fDelayTime = 0.0f;
+			fDelayTime += delta;
+
+			if (fDelayTime < 0.1f)
+			{
+				break;
+			}
+			fDelayTime = 0.f;
+
+			DoSchoolMoney();
+			break;
+		}
+		case POKERSEQUENCE_CHOICE:
 		{
 			DoChoice();
 			break;
@@ -81,11 +95,11 @@ void PlayerMan::Update(float delta)
 			static float fDelayTime = 0.0f;
 			fDelayTime += delta;
 
-			if (fDelayTime < 0.5f)
+			if (fDelayTime < 1.5f)
 			{
 				break;
 			}
-			fDelayTime -= 0.5f;
+			fDelayTime -= 1.5f;
 
 			if (m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].DoBet1()) {
                 unsigned int seedMoney = m_pkDealer->GetSeedMoney();
@@ -113,11 +127,11 @@ void PlayerMan::Update(float delta)
 			static float fDelayTime = 0.0f;
 			fDelayTime += delta;
 
-			if (fDelayTime < 0.5f)
+			if (fDelayTime < 1.5f)
 			{
 				break;
 			}
-			fDelayTime -= 0.5f;
+			fDelayTime -= 1.5f;
 
 			if (m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].DoBet2()) {
 				unsigned int seedMoney = m_pkDealer->GetSeedMoney();
@@ -144,11 +158,11 @@ void PlayerMan::Update(float delta)
 			static float fDelayTime = 0.0f;
 			fDelayTime += delta;
 
-			if (fDelayTime < 0.5f)
+			if (fDelayTime < 1.5f)
 			{
 				break;
 			}
-			fDelayTime -= 0.5f;
+			fDelayTime -= 1.5f;
 
 			if (m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].DoBet3()) {
 				unsigned int seedMoney = m_pkDealer->GetSeedMoney();
@@ -177,11 +191,11 @@ void PlayerMan::Update(float delta)
 			static float fDelayTime = 0.0f;
 			fDelayTime += delta;
 
-			if (fDelayTime < 0.5f)
+			if (fDelayTime < 1.5f)
 			{
 				break;
 			}
-			fDelayTime -= 0.5f;
+			fDelayTime -= 1.5f;
 
 			if (m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].DoBet4()) {
 				unsigned int seedMoney = m_pkDealer->GetSeedMoney();
@@ -224,6 +238,36 @@ void PlayerMan::Update(float delta)
         default:
             break;
 	}
+}
+
+void PlayerMan::DoSchoolMoney()
+{
+	if (m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].GetTempSchoolMoney() > 0)
+		return;
+
+	unsigned int seedMoney = m_pkDealer->GetSeedMoney();
+	m_akPokerPlayer[m_kPlayerManInfo.m_nTurnIndex].CalcSchoolMoney(seedMoney);
+	SetTurnOver();
+}
+
+bool PlayerMan::IsSchoolMoneyDone()
+{
+	unsigned int uiAlivePlayerCount = GetAlivePlayerCount();
+
+	unsigned int uiSchoolMoneyDoneCount = 0;
+	for (unsigned int ui = 0; ui < MAX_POKERPLAYER_COUNT; ui++)
+	{
+		if (m_akPokerPlayer[ui].GetPlayerState() == Player::PLAYERSTATE_NONE)
+			continue;
+
+		if (m_akPokerPlayer[ui].IsDie())
+			continue;
+
+		if (m_akPokerPlayer[ui].IsSchoolMoneyDone())
+			uiSchoolMoneyDoneCount++;
+	}
+
+	return (uiAlivePlayerCount == uiSchoolMoneyDoneCount);
 }
 
 bool PlayerMan::IsChoiceDone() const
@@ -426,6 +470,11 @@ unsigned int PlayerMan::GetAlivePlayerCount() const
 	}
 
 	return nAlivePlayerCount;
+}
+
+bool PlayerMan::IsLeaveAlone() const
+{
+	return (GetAlivePlayerCount() == 1);
 }
 
 unsigned int PlayerMan::GetSunIndex() const

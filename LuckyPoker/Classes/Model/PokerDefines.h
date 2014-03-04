@@ -186,6 +186,8 @@ struct PokerPlayerInfo
 	Card			kDropCard;
 	Card			akOpenCard[MAX_OPENCARD_COUNT];
 	Card			akHiddenCard[MAX_HIDDENCARD_COUNT];
+	bool			bSchoolMoney;
+	unsigned int	nTempSchoolMoney;
 	bool			bChoice;
 	Betting			eBet1;
 	unsigned int	nLastBet1Money;
@@ -223,6 +225,8 @@ struct PokerPlayerInfo
 		{
 			akHiddenCard[i].Clear();
 		}
+		bSchoolMoney = false;
+		nTempSchoolMoney = 0;
 		bChoice = false;
 		eBet1 = BETTING_NONE;
 		nLastBet1Money = 0;

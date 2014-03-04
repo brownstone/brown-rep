@@ -28,7 +28,7 @@ public:
 		CARDNUMBER_J,
 		CARDNUMBER_Q,
 		CARDNUMBER_K,
-		CARDNUMBER_MAX, //13
+		CARDNUMBER_MAX, //12
 	};
 
 	enum PokerCard

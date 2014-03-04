@@ -96,6 +96,11 @@ Betting Player::GetLastBetting(int betIndex)
     return bet;
 }
 
+void Player::CalcSchoolMoney(unsigned int seedMoney)
+{
+	m_kPokerPlayerInfo.nTempSchoolMoney = seedMoney;
+}
+
 void Player::CalcBetMoney(int betIndex, unsigned int seedMoney, unsigned int callMoney, unsigned int titleMoney)
 {
     Betting bet = BETTING_NONE;
@@ -182,9 +187,35 @@ bool Player::IsRaiseUp(int betIndex)
 
 void Player::ExactCalc(int betIndex)
 {
-    m_kPokerPlayerInfo.nTotalMoney -= m_kPokerPlayerInfo.nTempBet1Money;
-    m_kPokerPlayerInfo.nLastBet1Money += m_kPokerPlayerInfo.nTempBet1Money;
-	m_kPokerPlayerInfo.nTempBet1Money = 0;
+	if (betIndex == 1) {
+		m_kPokerPlayerInfo.nTotalMoney -= m_kPokerPlayerInfo.nTempBet1Money;
+		m_kPokerPlayerInfo.nLastBet1Money += m_kPokerPlayerInfo.nTempBet1Money;
+		m_kPokerPlayerInfo.nTempBet1Money = 0;
+	} else if (betIndex == 2) {
+		m_kPokerPlayerInfo.nTotalMoney -= m_kPokerPlayerInfo.nTempBet2Money;
+		m_kPokerPlayerInfo.nLastBet2Money += m_kPokerPlayerInfo.nTempBet1Money;
+		m_kPokerPlayerInfo.nTempBet2Money = 0;
+	} else if (betIndex == 3) {
+		m_kPokerPlayerInfo.nTotalMoney -= m_kPokerPlayerInfo.nTempBet3Money;
+		m_kPokerPlayerInfo.nLastBet3Money += m_kPokerPlayerInfo.nTempBet3Money;
+		m_kPokerPlayerInfo.nTempBet3Money = 0;
+	} else if (betIndex == 4) {
+		m_kPokerPlayerInfo.nTotalMoney -= m_kPokerPlayerInfo.nTempBet4Money;
+		m_kPokerPlayerInfo.nLastBet4Money += m_kPokerPlayerInfo.nTempBet4Money;
+		m_kPokerPlayerInfo.nTempBet4Money = 0;
+	}
+}
+
+void Player::ExactCalcSchoolMoney()
+{
+	m_kPokerPlayerInfo.nTotalMoney -= m_kPokerPlayerInfo.nTempSchoolMoney;
+	m_kPokerPlayerInfo.nTempSchoolMoney = 0;
+	m_kPokerPlayerInfo.bSchoolMoney = true;
+}
+
+unsigned int Player::GetTempSchoolMoney()
+{
+	return m_kPokerPlayerInfo.nTempSchoolMoney;
 }
 
 Betting Player::GetBetting(Betting ePriviousBetting) const
@@ -203,7 +234,7 @@ Betting Player::GetBetting(Betting ePriviousBetting) const
 		int nRnd = rand() % 4;
 		if (nRnd == 0)
 		{
-			eResult = BETTING_DIE;
+			eResult = BETTING_BBING;
 		}
 		else if (nRnd == 1)
 		{
@@ -420,6 +451,11 @@ unsigned int Player::GetLastBetMoney(int betIndex)
 bool Player::IsDie() const
 {
 	return m_kPokerPlayerInfo.bDie;
+}
+
+bool Player::IsSchoolMoneyDone() const
+{
+	return m_kPokerPlayerInfo.bSchoolMoney;
 }
 
 bool Player::IsChoiceDone() const

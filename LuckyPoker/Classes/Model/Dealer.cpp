@@ -22,7 +22,7 @@ bool Dealer::Init(PokerRule* rule, PlayerMan* playerMan)
     m_nLastWinnerIndex = 0;
     
 	m_kTableInfo.Init();
-	m_kTableInfo.m_nSeedMoney = 100;
+	m_kTableInfo.m_nSeedMoney = 10;
     return true;
 }
 
@@ -46,6 +46,7 @@ void Dealer::Update(float delta)
         if (start) {
             Shuffle();
         }
+		CalcSchoolMoney();
         break;
     case POKERSEQUENCE_DEALFIRSTCARD:
         if (start) {// 처음에 석장씩 나눠어준다.
@@ -104,6 +105,27 @@ void Dealer::Update(float delta)
     default: 
         break;
     }
+}
+
+void Dealer::CalcSchoolMoney()
+{
+	for (unsigned int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+	{
+		Player& player = m_pkPlayerMan->GetPlayerByIndex(i);
+
+		if (player.IsDie())
+			continue;
+
+		if (player.IsSchoolMoneyDone())
+			continue;
+
+		unsigned int tempSchoolMoney = player.GetTempSchoolMoney();
+		if (tempSchoolMoney > 0) {
+			// transaction...
+			player.ExactCalcSchoolMoney();
+			AddMoney(tempSchoolMoney);
+		}
+	}
 }
 
 void Dealer::Settle()

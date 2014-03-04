@@ -1,4 +1,4 @@
-#include "Card.h"
+Ôªø#include "Card.h"
 
 Card::Card()
 {
@@ -76,62 +76,62 @@ bool Card::SameCard(const Card& rhs)
 
 const char* Card::GetString() const
 {
-	// ¢ø °ﬂ  ¢Ω  ¢ª   ¢ª ¢º ¢Ω ¢æ ¢ø ¢¿ ¢¡ ¢¬ ¢√ ¢ƒ ¢≈ °ﬁ °ﬂ
-	//return " ¢ø °ﬂ  ¢Ω  ¢ª";
+	// ‚ôß ‚óÜ  ‚ô°  ‚ô§   ‚ô§ ‚ô† ‚ô° ‚ô• ‚ôß ‚ô£ ‚äô ‚óà ‚ñ£ ‚óê ‚óë ‚óá ‚óÜ
+	//return " ‚ôß ‚óÜ  ‚ô°  ‚ô§";	 // ‚ô† ‚ô• ‚ô¶ ‚ô£
 	//switch (m_eCard)
 	//{
-	//case CARD_C1: return "¢¿A ";
-	//case CARD_C2: return "¢¿2 ";
-	//case CARD_C3: return "¢¿3 ";
-	//case CARD_C4: return "¢¿4 ";
-	//case CARD_C5: return "¢¿5 ";
-	//case CARD_C6: return "¢¿6 ";
-	//case CARD_C7: return "¢¿7 ";
-	//case CARD_C8: return "¢¿8 ";
-	//case CARD_C9: return "¢¿9 ";
-	//case CARD_C10: return "¢¿J ";
-	//case CARD_C11: return "¢¿Q ";
-	//case CARD_C12: return "¢¿K ";
-	//case CARD_C13: return "¢¿A ";
-	//case CARD_D1: return "°ﬁA ";
-	//case CARD_D2: return "°ﬁ2 ";
-	//case CARD_D3: return "°ﬁ3 ";
-	//case CARD_D4: return "°ﬁ4 ";
-	//case CARD_D5: return "°ﬁ5 ";
-	//case CARD_D6: return "°ﬁ6 ";
-	//case CARD_D7: return "°ﬁ7 ";
-	//case CARD_D8: return "°ﬁ8 ";
-	//case CARD_D9: return "°ﬁ9 ";
-	//case CARD_D10: return "°ﬁJ ";
-	//case CARD_D11: return "°ﬁQ ";
-	//case CARD_D12: return "°ﬁK ";
-	//case CARD_D13: return "°ﬁA ";
-	//case CARD_H1: return "¢æA ";
-	//case CARD_H2: return "¢æ2 ";
-	//case CARD_H3: return "¢æ3 ";
-	//case CARD_H4: return "¢æ4 ";
-	//case CARD_H5: return "¢æ5 ";
-	//case CARD_H6: return "¢æ6 ";
-	//case CARD_H7: return "¢æ7 ";
-	//case CARD_H8: return "¢æ8 ";
-	//case CARD_H9: return "¢æ9 ";
-	//case CARD_H10: return "¢æJ ";
-	//case CARD_H11: return "¢æQ ";
-	//case CARD_H12: return "¢æK ";
-	//case CARD_H13: return "¢æA ";
-	//case CARD_S1: return "¢ºA ";
-	//case CARD_S2: return "¢º2 ";
-	//case CARD_S3: return "¢º3 ";
-	//case CARD_S4: return "¢º4 ";
-	//case CARD_S5: return "¢º5 ";
-	//case CARD_S6: return "¢º6 ";
-	//case CARD_S7: return "¢º7 ";
-	//case CARD_S8: return "¢º8 ";
-	//case CARD_S9: return "¢º9 ";
-	//case CARD_S10: return "¢ºJ ";
-	//case CARD_S11: return "¢ºQ ";
-	//case CARD_S12: return "¢ºK ";
-	//case CARD_S13: return "¢ºA ";
+	//case CARD_C1: return "‚ô£A ";
+	//case CARD_C2: return "‚ô£2 ";
+	//case CARD_C3: return "‚ô£3 ";
+	//case CARD_C4: return "‚ô£4 ";
+	//case CARD_C5: return "‚ô£5 ";
+	//case CARD_C6: return "‚ô£6 ";
+	//case CARD_C7: return "‚ô£7 ";
+	//case CARD_C8: return "‚ô£8 ";
+	//case CARD_C9: return "‚ô£9 ";
+	//case CARD_C10: return "‚ô£10 ";
+	//case CARD_C11: return "‚ô£J ";
+	//case CARD_C12: return "‚ô£Q ";
+	//case CARD_C13: return "‚ô£K ";
+	//case CARD_D1: return "‚ô¶A ";
+	//case CARD_D2: return "‚ô¶2 ";
+	//case CARD_D3: return "‚ô¶3 ";
+	//case CARD_D4: return "‚ô¶4 ";
+	//case CARD_D5: return "‚ô¶5 ";
+	//case CARD_D6: return "‚ô¶6 ";
+	//case CARD_D7: return "‚ô¶7 ";
+	//case CARD_D8: return "‚ô¶8 ";
+	//case CARD_D9: return "‚ô¶9 ";
+	//case CARD_D10: return "‚ô¶10 ";
+	//case CARD_D11: return "‚ô¶J ";
+	//case CARD_D12: return "‚ô¶Q ";
+	//case CARD_D13: return "‚ô¶K ";
+	//case CARD_H1: return "‚ô•A ";
+	//case CARD_H2: return "‚ô•2 ";
+	//case CARD_H3: return "‚ô•3 ";
+	//case CARD_H4: return "‚ô•4 ";
+	//case CARD_H5: return "‚ô•5 ";
+	//case CARD_H6: return "‚ô•6 ";
+	//case CARD_H7: return "‚ô•7 ";
+	//case CARD_H8: return "‚ô•8 ";
+	//case CARD_H9: return "‚ô•9 ";
+	//case CARD_H10: return "‚ô•10 ";
+	//case CARD_H11: return "‚ô•J ";
+	//case CARD_H12: return "‚ô•Q ";
+	//case CARD_H13: return "‚ô•K ";
+	//case CARD_S1: return "‚ô†A ";
+	//case CARD_S2: return "‚ô†2 ";
+	//case CARD_S3: return "‚ô†3 ";
+	//case CARD_S4: return "‚ô†4 ";
+	//case CARD_S5: return "‚ô†5 ";
+	//case CARD_S6: return "‚ô†6 ";
+	//case CARD_S7: return "‚ô†7 ";
+	//case CARD_S8: return "‚ô†8 ";
+	//case CARD_S9: return "‚ô†9 ";
+	//case CARD_S10: return "‚ô†10 ";
+	//case CARD_S11: return "‚ô†J ";
+	//case CARD_S12: return "‚ô†Q ";
+	//case CARD_S13: return "‚ô†K ";
 	//default: return " "; break;
 	//}
 
@@ -146,10 +146,10 @@ const char* Card::GetString() const
 	case CARD_C7: return "C7 ";
 	case CARD_C8: return "C8 ";
 	case CARD_C9: return "C9 ";
-	case CARD_C10: return "CJ ";
-	case CARD_C11: return "CQ ";
-	case CARD_C12: return "CK ";
-	case CARD_C13: return "CA ";
+	case CARD_C10: return "C10 ";
+	case CARD_C11: return "CJ ";
+	case CARD_C12: return "CQ ";
+	case CARD_C13: return "CK ";
 	case CARD_D1: return "DA ";
 	case CARD_D2: return "D2 ";
 	case CARD_D3: return "D3 ";
@@ -159,10 +159,10 @@ const char* Card::GetString() const
 	case CARD_D7: return "D7 ";
 	case CARD_D8: return "D8 ";
 	case CARD_D9: return "D9 ";
-	case CARD_D10: return "DJ ";
-	case CARD_D11: return "DQ ";
-	case CARD_D12: return "DK ";
-	case CARD_D13: return "DA ";
+	case CARD_D10: return "D10 ";
+	case CARD_D11: return "DJ ";
+	case CARD_D12: return "DQ ";
+	case CARD_D13: return "DK ";
 	case CARD_H1: return "HA ";
 	case CARD_H2: return "H2 ";
 	case CARD_H3: return "H3 ";
@@ -172,10 +172,10 @@ const char* Card::GetString() const
 	case CARD_H7: return "H7 ";
 	case CARD_H8: return "H8 ";
 	case CARD_H9: return "H9 ";
-	case CARD_H10: return "HJ ";
-	case CARD_H11: return "HQ ";
-	case CARD_H12: return "HK ";
-	case CARD_H13: return "HA ";
+	case CARD_H10: return "H10 ";
+	case CARD_H11: return "HJ ";
+	case CARD_H12: return "HQ ";
+	case CARD_H13: return "HK ";
 	case CARD_S1: return "SA ";
 	case CARD_S2: return "S2 ";
 	case CARD_S3: return "S3 ";
@@ -185,11 +185,10 @@ const char* Card::GetString() const
 	case CARD_S7: return "S7 ";
 	case CARD_S8: return "S8 ";
 	case CARD_S9: return "S9 ";
-	case CARD_S10: return "SJ ";
-	case CARD_S11: return "SQ ";
-	case CARD_S12: return "SK ";
-	case CARD_S13: return "SA ";
+	case CARD_S10: return "S10 ";
+	case CARD_S11: return "SJ ";
+	case CARD_S12: return "SQ ";
+	case CARD_S13: return "SK ";
 	default: return " "; break;
 	}
-
 }

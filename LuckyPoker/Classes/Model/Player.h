@@ -40,7 +40,8 @@ public:
     bool DoBet4();
     
     bool IsDie() const;
-    bool IsChoiceDone() const;
+	bool IsSchoolMoneyDone() const;
+	bool IsChoiceDone() const;
     bool IsBet1CheckOrCall() const;
     bool IsBet2CheckOrCall() const;
     bool IsBet3CheckOrCall() const;
@@ -53,12 +54,15 @@ public:
     void CalcJokboResultLast();
     void AddMoney(unsigned int money);
 
+	void CalcSchoolMoney(unsigned int seedMoney);
+	unsigned int GetTempSchoolMoney();
     bool IsRaiseUp(int betIndex);
     void CalcBetMoney(int betIndex, unsigned int seedMoney, unsigned int callMoney, unsigned int titleMoney);
     Betting GetLastBetting(int betIndex);
     unsigned int GetTempBetMoney(int betIndex);
     unsigned int GetLastBetMoney(int betIndex);
-    void ExactCalc(int betIndex);
+	void ExactCalc(int betIndex);
+	void ExactCalcSchoolMoney();
     Betting GetBetting(Betting ePriviousBetting) const;
 
     void GetStringInfo(char szInformation[]) const;
