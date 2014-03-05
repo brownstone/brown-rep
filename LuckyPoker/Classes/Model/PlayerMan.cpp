@@ -549,5 +549,13 @@ void PlayerMan::GetPlayerInfo(PokerPlayerInfo playerInfos[])
 	{
 		m_akPokerPlayer[i].GetPlayerInfo(playerInfos[i]);
 	}
-
 }
+
+void PlayerMan::GetPlayerJokbo(JokboResult jokboInfos[])
+{
+	for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++) 
+	{
+		m_akPokerPlayer[i].GetPlayerJokbo(jokboInfos[i]);
+	}
+}
+

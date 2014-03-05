@@ -52,6 +52,11 @@ void MainLogic::GetPlayerInfo(PokerPlayerInfo playerInfos[])
 	m_kPlayerMan.GetPlayerInfo(playerInfos);
 }
 
+void MainLogic::GetPlayerJokboInfo(JokboResult jokboInfos[])
+{
+	m_kPlayerMan.GetPlayerJokbo(jokboInfos);
+}
+
 void MainLogic::GetDealerInfo(TableInfo& tableInfo)
 {
 	m_kDealer.GetTableInfo(tableInfo);

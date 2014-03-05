@@ -67,6 +67,7 @@ public:
 	bool SameCard(const Card& rhs);
 
 	const char* GetString() const;
+	const char* GetNumberToString() const;
 
 
 protected:

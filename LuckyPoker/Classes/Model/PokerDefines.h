@@ -117,6 +117,73 @@ struct JokboResult
     Card	kTopCard;
     Card	kSecondCard; // 두번째로 높은 카드를 비교할때는 투페어일때 뿐이다.
     Card	akFlush[4];  // 플러시
+
+	JokboResult()
+	{
+		Init();
+	}
+
+	void Init()
+	{
+		eJokbo = JOKBO_NONE;
+		kTopCard.Clear();
+		kSecondCard.Clear();
+		akFlush[0].Clear();
+		akFlush[1].Clear();
+		akFlush[2].Clear();
+		akFlush[3].Clear();
+	}
+
+	bool Changed(const JokboResult& rhs)
+	{
+		bool changed = false;
+		changed |= (eJokbo != rhs.eJokbo);
+		changed |= !kTopCard.SameCard(rhs.kTopCard);
+		changed |= !kSecondCard.SameCard(rhs.kSecondCard);
+		changed |= !akFlush[0].SameCard(rhs.akFlush[0]);
+		changed |= !akFlush[1].SameCard(rhs.akFlush[1]);
+		changed |= !akFlush[2].SameCard(rhs.akFlush[2]);
+		changed |= !akFlush[3].SameCard(rhs.akFlush[3]);
+
+		return changed;
+	}
+
+	char* GetStringInfo(char szInformation[]) const
+	{
+		szInformation[0] = 0;
+
+		static const char* szJokboName[] = {
+			"NONE",
+			"TOP",
+			"OnePair",
+			"TwoPair",
+			"Trifle",
+			"Straight",
+			"BackStraight",
+			"RoyalStraight",
+			"Flush",
+			"FullHouse",
+			"FourCard",
+			"StraightFlush",
+			"BackStraightFlush",
+			"RoyalStraightFlush",
+		};
+
+		switch (eJokbo)
+		{
+		case  JOKBO_NOPAIR:
+		case  JOKBO_ONEPAIR:
+		case  JOKBO_TWOPAIR:
+		case  JOKBO_TRIFLE:
+			sprintf(szInformation, "%s %s", kTopCard.GetNumberToString(), szJokboName[eJokbo]);
+			break;
+		default: 
+			strcpy_s(szInformation, 128, szJokboName[eJokbo]);
+			break;
+		}
+
+		return szInformation;
+	}
 };
 
 struct AiWeight
@@ -274,11 +341,11 @@ struct PokerPlayerInfo
 		//strcat_s(szInformation, 256, GetCardStringInfo(m_kJokboResult.kTopCard, szCard));
 		//strcat_s(szInformation, 256, "\n");
 
-		for (unsigned int ui = 0; ui < MAX_OPENCARD_COUNT; ui++)
-		{
-			strcat_s(szInformation, 256, akOpenCard[ui].GetString());
-		}
-		strcat_s(szInformation, 256, "\n");
+		//for (unsigned int ui = 0; ui < MAX_OPENCARD_COUNT; ui++)
+		//{
+		//	strcat_s(szInformation, 256, akOpenCard[ui].GetString());
+		//}
+		//strcat_s(szInformation, 256, "\n");
 
 		//for (unsigned int ui = 0; ui < MAX_HIDDENCARD_COUNT; ui++)
 		//{

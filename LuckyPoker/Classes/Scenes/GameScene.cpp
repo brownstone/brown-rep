@@ -92,7 +92,7 @@ bool PlayerLayer::init()
 	static int rightXPos = visibleSize.width - playerBoxWidth - 20;
 	static int topYPos    = 3 * visibleSize.height / 3 - 60;
 	static int midYPos    = 2 * visibleSize.height / 3 - 60;
-	static int bottomYPos = 1 * visibleSize.height / 3 - 60;
+	static int bottomYPos = 1 * visibleSize.height / 3 - 40;
 
 
 	int playerPosX[5];
@@ -146,6 +146,21 @@ bool PlayerLayer::init()
 		}
 	}
 
+	{ // jokbo
+		static const int JOKBO_DISPALY_HEIGHT = 16;
+		for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+		{
+			for (int j = 0; j < 2; j++) 
+			{
+				pLabel = CCLabelTTF::create(" ", "Arial", 18);
+				pLabel->setPosition(ccp(playerPosX[i], playerPosY[i] - 40 - (j * JOKBO_DISPALY_HEIGHT)));
+				pLabel->setColor(ccYELLOW);
+				this->addChild(pLabel, 2, (i + 1) * 1000 + j);
+			}
+		}
+	}
+
+
 	m_pMainLogic = InstanceMan::mainLogic->GetInstance();
 
 	m_kPokerSequence = POKERSEQUENCE_NONE;
@@ -164,19 +179,37 @@ void PlayerLayer::update(float delta)
 {
 	CCLayer::update(delta);
 
-	PokerPlayerInfo playerInfos[MAX_POKERPLAYER_COUNT];
-	m_pMainLogic->GetPlayerInfo(playerInfos);
 
-	// player info
-	for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
-	{
-		bool changed = m_kPlayerInfos[i].Changed(playerInfos[i]);
-		if (changed)
+	{ // player info
+		PokerPlayerInfo playerInfos[MAX_POKERPLAYER_COUNT];
+		m_pMainLogic->GetPlayerInfo(playerInfos);
+
+		for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
 		{
-			DisplayPlayer(i, playerInfos[i]);
-			m_kPlayerInfos[i] = playerInfos[i];
+			bool changed = m_kPlayerInfos[i].Changed(playerInfos[i]);
+			if (changed)
+			{
+				DisplayPlayer(i, playerInfos[i]);
+				m_kPlayerInfos[i] = playerInfos[i];
+			}
 		}
 	}
+
+	{ // jokbo info
+		JokboResult jokboInfos[MAX_POKERPLAYER_COUNT];
+		m_pMainLogic->GetPlayerJokboInfo(jokboInfos);
+
+		for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+		{
+			bool changed = m_kPlayerJokbo[i].Changed(jokboInfos[i]);
+			if (changed)
+			{
+				DisplayPlayerJokbo(i, jokboInfos[i]);
+				m_kPlayerJokbo[i] = jokboInfos[i];
+			}
+		}
+	}
+
 
 	{ // dealer info
 		TableInfo tableInfo;
@@ -206,7 +239,6 @@ void PlayerLayer::update(float delta)
 	}
 }
 
-
 void PlayerLayer::DisplayPlayer(int index, const PokerPlayerInfo& playerInfo)
 {
 	char pszInfo[256];
@@ -235,7 +267,7 @@ void PlayerLayer::DisplayPlayerHandCards(int index, const PokerPlayerInfo& playe
 		{
 			int cardTag = (index + 1) * 100 + i;
 			CCSprite* cardSprite = (CCSprite*)getChildByTag(cardTag);
-			if (cardSprite->isVisible() == false)
+			if (cardSprite && cardSprite->isVisible() == false)
 			{
 				static const int CARD_WIDTH = 20;
 				static const int CARD_HEIGHT = 40;
@@ -249,6 +281,21 @@ void PlayerLayer::DisplayPlayerHandCards(int index, const PokerPlayerInfo& playe
 		}
 	}
 }
+
+void PlayerLayer::DisplayPlayerJokbo(int index, const JokboResult& playerJokbo)
+{
+	char pszInfo[256];
+	playerJokbo.GetStringInfo(pszInfo);
+
+	int labelIndex = (index + 1) * 1000 + 0;
+
+	CCLabelTTF* label = (CCLabelTTF*)getChildByTag(labelIndex);
+	if (label)
+	{
+		label->setString(pszInfo);
+	}
+}
+
 
 void PlayerLayer::HideHandCards()
 {

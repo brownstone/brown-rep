@@ -23,6 +23,7 @@ public:
     virtual void update(float delta);
 
 	void GetPlayerInfo(PokerPlayerInfo playerInfos[]);
+	void GetPlayerJokboInfo(JokboResult jokboInfos[]);
 	void GetDealerInfo(TableInfo& tableInfo);
 	PokerSequence GetSequence();
 

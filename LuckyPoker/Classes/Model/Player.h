@@ -69,10 +69,11 @@ public:
     Betting GetBetting(Betting ePriviousBetting) const;
 
     void GetStringInfo(char szInformation[]) const;
-    //char* GetJokboStringInfo(Jokbo eJokbo, char szCard[]) const
+    char* GetJokboStringInfo(Jokbo eJokbo, char szCard[]) const;
     //char* GetCardStringInfo(const Card& kCard, char szCard[]) const
 
 	void GetPlayerInfo(PokerPlayerInfo& playerInfo);
+	void GetPlayerJokbo(JokboResult& jokboInfo);
 
     void SetComputer();
     void Remove();

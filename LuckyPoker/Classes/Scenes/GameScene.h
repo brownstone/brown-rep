@@ -34,6 +34,7 @@ public:
 private:
 	void DisplayPlayer(int index, const PokerPlayerInfo& playerInfo);
 	void DisplayPlayerHandCards(int index, const PokerPlayerInfo& playerInfo);
+	void DisplayPlayerJokbo(int index, const JokboResult& playerInfo);
 	void DisplayDealer(const TableInfo& tableInfo);
 	void DisplaySeq(PokerSequence seq);
 	void HideHandCards();
@@ -43,6 +44,7 @@ private:
 
 	PlayerManInfo   m_kPlayerManInfo;
 	PokerPlayerInfo m_kPlayerInfos[MAX_POKERPLAYER_COUNT];
+	JokboResult		m_kPlayerJokbo[MAX_POKERPLAYER_COUNT];
 	TableInfo       m_kTableInfo;
 	PokerSequence   m_kPokerSequence;
 

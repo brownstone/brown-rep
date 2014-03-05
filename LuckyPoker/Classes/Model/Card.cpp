@@ -192,3 +192,26 @@ const char* Card::GetString() const
 	default: return " "; break;
 	}
 }
+
+const char* Card::GetNumberToString() const
+{
+	switch(GetNumber())
+	{
+	case CARDNUMBER_A: return "A";
+	case CARDNUMBER_2: return "2";
+	case CARDNUMBER_3: return "3";
+	case CARDNUMBER_4: return "4";
+	case CARDNUMBER_5: return "5";
+	case CARDNUMBER_6: return "6";
+	case CARDNUMBER_7: return "7";
+	case CARDNUMBER_8: return "8";
+	case CARDNUMBER_9: return "9";
+	case CARDNUMBER_10: return "10";
+	case CARDNUMBER_J: return "J";
+	case CARDNUMBER_Q: return "Q";
+	case CARDNUMBER_K: return "K";
+	default: return " ";
+	}
+
+	return " ";
+}

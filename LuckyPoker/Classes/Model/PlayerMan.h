@@ -46,6 +46,7 @@ public:
     int GetHighJokboPlayer();
 
 	void GetPlayerInfo(PokerPlayerInfo playerInfos[]);
+	void GetPlayerJokbo(JokboResult jokboInfos[]);
 
 
 
