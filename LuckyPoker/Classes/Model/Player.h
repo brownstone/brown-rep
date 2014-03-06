@@ -51,7 +51,8 @@ public:
     bool IsBet4CheckOrCall() const;
     void SetDeal3Card(const Deal3CardInfo& kCardInfo);
     void SetDealCard(const DealCardInfo& kCardInfo, int nIndex);
-    void SetHiddenCard(const DealCardInfo& kCardInfo, int nIndex);
+	void SetHiddenCard(const DealCardInfo& kCardInfo, int nIndex);
+	void SetLastCard(const DealCardInfo& kCardInfo);
     const JokboResult& GetJokboResult() const;
     void CalcJokboResult();
     void CalcJokboResultLast();
@@ -69,7 +70,6 @@ public:
     Betting GetBetting(Betting ePriviousBetting) const;
 
     void GetStringInfo(char szInformation[]) const;
-    char* GetJokboStringInfo(Jokbo eJokbo, char szCard[]) const;
     //char* GetCardStringInfo(const Card& kCard, char szCard[]) const
 
 	void GetPlayerInfo(PokerPlayerInfo& playerInfo);

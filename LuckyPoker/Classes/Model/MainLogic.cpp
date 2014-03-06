@@ -59,7 +59,12 @@ void MainLogic::GetPlayerJokboInfo(JokboResult jokboInfos[])
 
 void MainLogic::GetDealerInfo(TableInfo& tableInfo)
 {
-	m_kDealer.GetTableInfo(tableInfo);
+    m_kDealer.GetTableInfo(tableInfo);
+}
+
+void MainLogic::GetPlayerManInfo(PlayerManInfo& playerManInfo)
+{
+    m_kPlayerMan.GetPlayerManInfo(playerManInfo);
 }
 
 PokerSequence MainLogic::GetSequence()

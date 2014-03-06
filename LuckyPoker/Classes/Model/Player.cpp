@@ -514,6 +514,11 @@ void Player::SetHiddenCard(const DealCardInfo& kCardInfo, int nIndex)
 	m_kPokerPlayerInfo.akHiddenCard[nIndex].SetCard((Card::PokerCard)kCardInfo.ucCard);
 }
 
+void Player::SetLastCard(const DealCardInfo& kCardInfo)
+{
+	m_kPokerPlayerInfo.kLastCard.SetCard((Card::PokerCard)kCardInfo.ucCard);
+}
+
 const JokboResult& Player::GetJokboResult() const
 {
 	return m_kJokboResult;
@@ -698,28 +703,6 @@ void Player::GetStringInfo(char szInformation[]) const
 
 }
 
-char* Player::GetJokboStringInfo(Jokbo eJokbo, char szCard[]) const
-{
-	static const char* szJokboName[] = {
-		"NONE",
-		"TOP",
-		"ONEPAIR",
-		"TWOPAIR",
-		"TRIFLE",
-		"STRAIGHT",
-		"BACKSTRAIGHT",
-		"ROYALSTRAIGHT",
-		"FLUSH",
-		"FULLHOUSE",
-		"FOURCARD",
-		"STRAIGHTFLUSH",
-		"BACKSTRAIGHTFLUSH",
-		"ROYALSTRAIGHTFLUSH",
-	};
-
-	strcpy_s(szCard, 128, szJokboName[eJokbo]);
-	return szCard;
-}
 
 //char* Player::GetCardStringInfo(const Card& kCard, char szCard[]) const
 //{

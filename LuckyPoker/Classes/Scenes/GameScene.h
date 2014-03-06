@@ -36,8 +36,14 @@ private:
 	void DisplayPlayerHandCards(int index, const PokerPlayerInfo& playerInfo);
 	void DisplayPlayerJokbo(int index, const JokboResult& playerInfo);
 	void DisplayDealer(const TableInfo& tableInfo);
-	void DisplaySeq(PokerSequence seq);
+    void DisplaySeq(PokerSequence seq);
+    void DisplayPlayerMan(const PlayerManInfo& playerManInfo);
 	void HideHandCards();
+
+	int GetCardSpriteTag(int playerIndex, int cardIndex) const;
+	int GetJokboLabelTag(int playerIndex, int labelIndex) const;
+
+    CCPoint GetPlayerPos(int playerIndex) const;
 
 private:
 	MainLogic* m_pMainLogic;
@@ -47,7 +53,6 @@ private:
 	JokboResult		m_kPlayerJokbo[MAX_POKERPLAYER_COUNT];
 	TableInfo       m_kTableInfo;
 	PokerSequence   m_kPokerSequence;
-
 
 };
 

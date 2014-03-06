@@ -47,7 +47,7 @@ public:
 
 	void GetPlayerInfo(PokerPlayerInfo playerInfos[]);
 	void GetPlayerJokbo(JokboResult jokboInfos[]);
-
+    void GetPlayerManInfo(PlayerManInfo& playerManInfo);
 
 
 protected:

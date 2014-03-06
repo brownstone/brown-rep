@@ -559,3 +559,7 @@ void PlayerMan::GetPlayerJokbo(JokboResult jokboInfos[])
 	}
 }
 
+void PlayerMan::GetPlayerManInfo(PlayerManInfo& playerManInfo)
+{
+    playerManInfo = m_kPlayerManInfo;
+}

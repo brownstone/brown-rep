@@ -24,7 +24,8 @@ public:
 
 	void GetPlayerInfo(PokerPlayerInfo playerInfos[]);
 	void GetPlayerJokboInfo(JokboResult jokboInfos[]);
-	void GetDealerInfo(TableInfo& tableInfo);
+    void GetDealerInfo(TableInfo& tableInfo);
+    void GetPlayerManInfo(PlayerManInfo& playerManInfo);
 	PokerSequence GetSequence();
 
     

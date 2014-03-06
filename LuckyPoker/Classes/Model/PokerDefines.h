@@ -213,9 +213,11 @@ struct CardBit
 };
 
 
-static const unsigned int MAX_FIRSTCARD_COUNT = 4;
+static const unsigned int MAX_FIRSTCARD_COUNT = 3;
+static const unsigned int MAX_HIDDENCARD_COUNT = 2;
 static const unsigned int MAX_OPENCARD_COUNT = 4;
-static const unsigned int MAX_HIDDENCARD_COUNT = 3;
+static const unsigned int MAX_LASTCARD_COUNT = 1;
+static const unsigned int MAX_HANDCARD_COUNT = MAX_HIDDENCARD_COUNT + MAX_OPENCARD_COUNT + MAX_LASTCARD_COUNT;
 static const unsigned int MAX_POKERPLAYER_COUNT = 5;
 static const int INVALID_PLAYER_INDEX = -1;
 
@@ -250,9 +252,9 @@ struct PokerPlayerInfo
 	unsigned int	nTotalMoney;
 	bool			bDie;
 	Card			akFirstCard[MAX_FIRSTCARD_COUNT];
-	Card			kDropCard;
-	Card			akOpenCard[MAX_OPENCARD_COUNT];
 	Card			akHiddenCard[MAX_HIDDENCARD_COUNT];
+	Card			akOpenCard[MAX_OPENCARD_COUNT];
+	Card			kLastCard;
 	bool			bSchoolMoney;
 	unsigned int	nTempSchoolMoney;
 	bool			bChoice;
@@ -294,6 +296,7 @@ struct PokerPlayerInfo
 		{
 			akHiddenCard[i].Clear();
 		}
+		kLastCard.Clear();
 		bSchoolMoney = false;
 		nTempSchoolMoney = 0;
 		bChoice = false;
@@ -451,6 +454,14 @@ struct PlayerManInfo
 		turnIndex = INVALID_PLAYER_INDEX;
 		thinkTime = 0;
 	}
+    bool Changed(const PlayerManInfo& rhs)
+    {
+        bool changed = false;
+        changed |= (sunPlayerIndex != rhs.sunPlayerIndex);
+        changed |= (turnIndex != rhs.turnIndex);
+
+        return changed;
+    }
 };
 
 struct TableInfo

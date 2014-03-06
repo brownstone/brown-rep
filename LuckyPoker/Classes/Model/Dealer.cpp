@@ -277,7 +277,7 @@ void Dealer::DoDeal(int betIndex)
 
             if (betIndex == 4)
             {
-                player.SetHiddenCard(kCardInfo, 2);
+                player.SetLastCard(kCardInfo);
             }
             else
             {

@@ -67,6 +67,34 @@ void GameBGLayer::update(float delta)
 }
 
 
+CCPoint PlayerLayer::GetPlayerPos(int playerIndex) const
+{
+    if (playerIndex >= MAX_POKERPLAYER_COUNT) {
+        return CCPoint(0,0);
+    }
+
+    CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
+
+    static int playerBoxWidth = 40;
+    //static int playerBoxHeight = 20;
+    static int leftXPos = 50;
+    static int midXPos = visibleSize.width / 2 - playerBoxWidth / 2;
+    static int rightXPos = visibleSize.width - playerBoxWidth - 20;
+    static int topYPos    = 3 * visibleSize.height / 3 - 60;
+    static int midYPos    = 2 * visibleSize.height / 3 - 60;
+    static int bottomYPos = 1 * visibleSize.height / 3 - 40;
+
+
+    int playerPosX[5];
+    int playerPosY[5];
+    playerPosX[0] = rightXPos;	playerPosY[0] = topYPos;
+    playerPosX[1] = rightXPos;	playerPosY[1] = midYPos;
+    playerPosX[2] = midXPos;	playerPosY[2] = bottomYPos;
+    playerPosX[3] = leftXPos;	playerPosY[3] = midYPos;
+    playerPosX[4] = leftXPos;	playerPosY[4] = topYPos;
+
+    return CCPoint(playerPosX[playerIndex], playerPosY[playerIndex]);
+}
 
 bool PlayerLayer::init()
 {
@@ -129,19 +157,19 @@ bool PlayerLayer::init()
 	this->addChild(pLabel, 1, 10);
 
 	pLabel = CCLabelTTF::create("Sequence", "Arial", 20);
-	pLabel->setPosition(ccp(origin.x + midXPos, origin.y + midYPos - 20));
+	pLabel->setPosition(ccp(origin.x + midXPos, origin.y + topYPos + 30));
 	this->addChild(pLabel, 1, 20);
 
 	{ // players hand card
 		static const int SMALL_CARD_WIDTH = 14;
 		for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
 		{
-			for (int j = 0; j < MAX_OPENCARD_COUNT + MAX_HIDDENCARD_COUNT; j++)
+			for (int j = 0; j < MAX_HANDCARD_COUNT; j++)
 			{
 				CCSprite* cardImg = CCSprite::create();
 				cardImg->setPosition(ccp(playerPosX[i] + j * SMALL_CARD_WIDTH - 40, playerPosY[i] - 20));
 				cardImg->setVisible(false);
-				addChild(cardImg, 1, (i + 1) * 100 + j);
+				addChild(cardImg, 1, GetCardSpriteTag(i, j));
 			}
 		}
 	}
@@ -155,9 +183,20 @@ bool PlayerLayer::init()
 				pLabel = CCLabelTTF::create(" ", "Arial", 18);
 				pLabel->setPosition(ccp(playerPosX[i], playerPosY[i] - 40 - (j * JOKBO_DISPALY_HEIGHT)));
 				pLabel->setColor(ccYELLOW);
-				this->addChild(pLabel, 2, (i + 1) * 1000 + j);
+				this->addChild(pLabel, 2, GetJokboLabelTag(i, j));
 			}
 		}
+	}
+	{ // sun, turn
+		CCSprite* sunImg = CCSprite::create("Images/sun.png");
+		sunImg->setPosition(ccp(playerPosX[0], playerPosY[0]));
+		sunImg->setVisible(false);
+		addChild(sunImg, 1, 300);
+
+		CCSprite* turnImg = CCSprite::create("Images/turn.png");
+		turnImg->setPosition(ccp(playerPosX[0], playerPosY[0]));
+		turnImg->setVisible(false);
+		addChild(turnImg, 1, 301);
 	}
 
 
@@ -237,6 +276,19 @@ void PlayerLayer::update(float delta)
 			m_kPokerSequence = seq;
 		}
 	}
+
+    { // player manager infos. sun/turn
+        PlayerManInfo playerManInfo;
+        m_pMainLogic->GetPlayerManInfo(playerManInfo);
+
+        bool changed = m_kPlayerManInfo.Changed(playerManInfo);
+        if (changed) 
+        {
+            DisplayPlayerMan(playerManInfo);
+            m_kPlayerManInfo = playerManInfo;
+        }
+
+    }
 }
 
 void PlayerLayer::DisplayPlayer(int index, const PokerPlayerInfo& playerInfo)
@@ -252,20 +304,36 @@ void PlayerLayer::DisplayPlayer(int index, const PokerPlayerInfo& playerInfo)
 	DisplayPlayerHandCards(index, playerInfo);
 }
 
+int PlayerLayer::GetCardSpriteTag(int playerIndex, int cardIndex) const
+{
+	int index = 100 + playerIndex * 10 + cardIndex;
+	return index;
+}
+
+int PlayerLayer::GetJokboLabelTag(int playerIndex, int labelIndex) const
+{
+	int index = 200 + playerIndex * 10 + labelIndex;
+	return index;
+}
+
 void PlayerLayer::DisplayPlayerHandCards(int index, const PokerPlayerInfo& playerInfo)
 {
-	for (int i = 0; i < MAX_HIDDENCARD_COUNT + MAX_OPENCARD_COUNT; i++)
+	for (int i = 0; i < MAX_HANDCARD_COUNT; i++)
 	{
 		Card card;
-		if (i >= MAX_HIDDENCARD_COUNT) {
-			card = playerInfo.akOpenCard[i - MAX_HIDDENCARD_COUNT];
-		} 
-		else {
+		if (i < MAX_HIDDENCARD_COUNT) {
 			card = playerInfo.akHiddenCard[i];
+		} 
+		else if (i < MAX_HIDDENCARD_COUNT + MAX_OPENCARD_COUNT) 
+		{
+			card = playerInfo.akOpenCard[i - MAX_HIDDENCARD_COUNT];
+		} else 
+		{
+			card = playerInfo.kLastCard;
 		}
 		if (card.GetCard() != Card::CARD_NONE)
 		{
-			int cardTag = (index + 1) * 100 + i;
+			int cardTag = GetCardSpriteTag(index, i);
 			CCSprite* cardSprite = (CCSprite*)getChildByTag(cardTag);
 			if (cardSprite && cardSprite->isVisible() == false)
 			{
@@ -287,9 +355,7 @@ void PlayerLayer::DisplayPlayerJokbo(int index, const JokboResult& playerJokbo)
 	char pszInfo[256];
 	playerJokbo.GetStringInfo(pszInfo);
 
-	int labelIndex = (index + 1) * 1000 + 0;
-
-	CCLabelTTF* label = (CCLabelTTF*)getChildByTag(labelIndex);
+	CCLabelTTF* label = (CCLabelTTF*)getChildByTag(GetJokboLabelTag(index, 0));
 	if (label)
 	{
 		label->setString(pszInfo);
@@ -302,10 +368,9 @@ void PlayerLayer::HideHandCards()
 	static const int SMALL_CARD_WIDTH = 20;
 	for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
 	{
-		for (int j = 0; j < MAX_OPENCARD_COUNT + MAX_HIDDENCARD_COUNT; j++)
+		for (int j = 0; j < MAX_HANDCARD_COUNT; j++)
 		{
-			int cardTag = (i + 1) * 100 + j;
-			CCSprite* cardSprite = (CCSprite*)getChildByTag(cardTag);
+			CCSprite* cardSprite = (CCSprite*)getChildByTag(GetCardSpriteTag(i, j));
 			cardSprite->setVisible(false);
 		}
 	}
@@ -329,6 +394,21 @@ void PlayerLayer::DisplaySeq(PokerSequence seq)
 	sprintf(pszInfo, "Seq: %s ", PokerSequenceStr[seq]);
 	CCLabelTTF *label = (CCLabelTTF *)getChildByTag(20);
 	label->setString(pszInfo);
+
+}
+
+void PlayerLayer::DisplayPlayerMan(const PlayerManInfo& playerManInfo)
+{
+    CCPoint sunPlayerPos(GetPlayerPos(playerManInfo.sunPlayerIndex));
+    CCSprite* sunImg = (CCSprite*)getChildByTag(300);
+    sunImg->setVisible(true);
+    sunImg->setPosition(sunPlayerPos);
+
+    CCPoint turnPlayerPos(GetPlayerPos(playerManInfo.turnIndex));
+    turnPlayerPos.x += 20;
+    CCSprite* turnImg = (CCSprite*)getChildByTag(301);
+    turnImg->setVisible(true);
+    turnImg->setPosition(turnPlayerPos);
 
 }
 
