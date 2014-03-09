@@ -218,6 +218,45 @@ unsigned int Player::GetTempSchoolMoney()
 	return m_kPokerPlayerInfo.nTempSchoolMoney;
 }
 
+void Player::OnEnterTurn()
+{
+    m_kPokerPlayerInfo.eBetAction = BET_ACTION_THINK;
+    m_kPokerPlayerInfo.fThinkTime = 2.0f;
+    m_kPokerPlayerInfo.fThrowTime = 1.0f;
+}
+
+void Player::OnLeaveTurn()
+{
+    ;
+}
+
+BetAction Player::Thinking(float delta)
+{
+    switch (m_kPokerPlayerInfo.eBetAction)
+    {
+    case BET_ACTION_THINK: 
+        m_kPokerPlayerInfo.fThinkTime -= delta;
+        if (m_kPokerPlayerInfo.fThinkTime < 0.0f) 
+        {
+            m_kPokerPlayerInfo.eBetAction = BET_ACTION_BETTING;
+        }
+        break;
+    case BET_ACTION_BETTING:
+        m_kPokerPlayerInfo.eBetAction = BET_ACTION_THROW;
+        break;
+    case BET_ACTION_THROW:
+        m_kPokerPlayerInfo.fThrowTime -= delta;
+        if (m_kPokerPlayerInfo.fThrowTime < 0.0f)
+        {
+            m_kPokerPlayerInfo.eBetAction = BET_ACTION_DONE;
+        }
+        break;
+    default: assert(0); break;
+    }
+
+    return m_kPokerPlayerInfo.eBetAction;
+}
+
 Betting Player::GetBetting(Betting ePriviousBetting) const
 {
 	// 내가 갖고 있는 금액과 카드와 상대방 카드를 보고 좀더 생각하는 코드가 있어야한다.
@@ -296,142 +335,56 @@ Betting Player::GetBetting(Betting ePriviousBetting) const
 	return eResult;
 }
 
-bool Player::DoBet1()
+bool Player::DoBetting(int betIndex)
 {
-	bool bTurnOver = false;
-	// 1. 나이면 ui를 호출하고 기다린다.
-	// 2. 컴퓨터는 끊긴넘이면 마스터가 대신 해준다.
-	// 3. 상대방이면 한없이 기다린다.
+    bool bTurnOver = false;
+    // 1. 나이면 ui를 호출하고 기다린다.
+    // 2. 컴퓨터는 끊긴넘이면 마스터가 대신 해준다.
+    // 3. 상대방이면 한없이 기다린다.
 
-	switch (m_ePlayerState)
-	{
-	case PLAYERSTATE_NONE:
-		break;
-	case PLAYERSTATE_LIVE:
-		{
+    switch (m_ePlayerState)
+    {
+    case PLAYERSTATE_NONE:
+        break;
+    case PLAYERSTATE_LIVE:
+        {
             // ui에서 베팅할수 있도록 한다.
             // 하염없이 기다린다.
             // 다른사용자이면 자연적으로 기다린다.
             //BiUiManager::GetInst()->
+            if (betIndex == 1) 
+                m_kPokerPlayerInfo.eBet1 = GetBetting(m_kPokerPlayerInfo.eBet1);
+            else if (betIndex == 2)
+                m_kPokerPlayerInfo.eBet2 = GetBetting(m_kPokerPlayerInfo.eBet2);
+            else if (betIndex == 3)
+                m_kPokerPlayerInfo.eBet3 = GetBetting(m_kPokerPlayerInfo.eBet3);
+            else if (betIndex == 4)
+                m_kPokerPlayerInfo.eBet4 = GetBetting(m_kPokerPlayerInfo.eBet4);
 
-            m_kPokerPlayerInfo.eBet1 = GetBetting(m_kPokerPlayerInfo.eBet1);
             bTurnOver = true;
-			break;
-		}
-	case PLAYERSTATE_COMPUTER:
-	case PLAYERSTATE_DISCONNECTER:
-		{
-            m_kPokerPlayerInfo.eBet1 = GetBetting(m_kPokerPlayerInfo.eBet1);
+            break;
+        }
+    case PLAYERSTATE_COMPUTER:
+    case PLAYERSTATE_DISCONNECTER:
+        {
+            if (betIndex == 1) 
+                m_kPokerPlayerInfo.eBet1 = GetBetting(m_kPokerPlayerInfo.eBet1);
+            else if (betIndex == 2)
+                m_kPokerPlayerInfo.eBet2 = GetBetting(m_kPokerPlayerInfo.eBet2);
+            else if (betIndex == 3)
+                m_kPokerPlayerInfo.eBet3 = GetBetting(m_kPokerPlayerInfo.eBet3);
+            else if (betIndex == 4)
+                m_kPokerPlayerInfo.eBet4 = GetBetting(m_kPokerPlayerInfo.eBet4);
             bTurnOver = true;
-			break;
-		}
-	default:
-		break;
-	}
-    
-	return bTurnOver;
+            break;
+        }
+    default:
+        break;
+    }
+
+    return bTurnOver;
 }
 
-bool Player::DoBet2()
-{
-	bool bTurnOver = false;
-
-	switch (m_ePlayerState)
-	{
-	case PLAYERSTATE_NONE:
-		break;
-	case PLAYERSTATE_LIVE:
-		{
-            m_kPokerPlayerInfo.eBet2 = GetBetting(m_kPokerPlayerInfo.eBet2);
-			bTurnOver = true;
-			break;
-		}
-	case PLAYERSTATE_COMPUTER:
-	case PLAYERSTATE_DISCONNECTER:
-		{
-            m_kPokerPlayerInfo.eBet2 = GetBetting(m_kPokerPlayerInfo.eBet2);
-			bTurnOver = true;
-			break;
-		}
-	default:
-		break;
-	}
-
-	return bTurnOver;
-}
-
-bool Player::DoBet3()
-{
-	bool bTurnOver = false;
-
-	switch (m_ePlayerState)
-	{
-	case PLAYERSTATE_NONE:
-		break;
-	case PLAYERSTATE_LIVE:
-		{
-            m_kPokerPlayerInfo.eBet3 = GetBetting(m_kPokerPlayerInfo.eBet3);
-			bTurnOver = true;
-			break;
-		}
-	case PLAYERSTATE_COMPUTER:
-	case PLAYERSTATE_DISCONNECTER:
-		{
-            m_kPokerPlayerInfo.eBet3 = GetBetting(m_kPokerPlayerInfo.eBet3);
-			bTurnOver = true;
-			break;
-		}
-	default:
-		break;
-	}
-
-	return bTurnOver;
-}
-
-bool Player::DoBet4()
-{
-	bool bTurnOver = false;
-
-	switch (m_ePlayerState)
-	{
-	case PLAYERSTATE_NONE:
-		break;
-	case PLAYERSTATE_LIVE:
-		{
-            m_kPokerPlayerInfo.eBet4 = GetBetting(m_kPokerPlayerInfo.eBet4);
-			bTurnOver = true;
-			break;
-		}
-	case PLAYERSTATE_COMPUTER:
-	case PLAYERSTATE_DISCONNECTER:
-		{
-            m_kPokerPlayerInfo.eBet4 = GetBetting(m_kPokerPlayerInfo.eBet4);
-			bTurnOver = true;
-			break;
-		}
-	default:
-		break;
-	}
-
-	return bTurnOver;
-}
-
-
-void Player::ResetThinkTime()
-{
-	m_kPokerPlayerInfo.thinkTime = 0;
-
-}
-
-void Player::SetThinkTime(int betIndex)
-{
-	m_kPokerPlayerInfo.thinkTime = 2.0f;
-}
-
-float Player::GetThinkTime()
-{
-	return m_kPokerPlayerInfo.thinkTime;
-}
 
 unsigned int Player::GetTempBetMoney(int betIndex)
 {
@@ -536,7 +489,7 @@ void Player::CalcJokboResult()
 
     unsigned int x, y;
 
-    for (unsigned int ui = 0; ui < 4; ui++)
+    for (unsigned int ui = 0; ui < MAX_OPENCARD_COUNT; ui++)
     {
         if (m_kPokerPlayerInfo.akOpenCard[ui].GetCard() > Card::CARD_NONE)
         {
@@ -564,7 +517,7 @@ void Player::CalcJokboResultLast()
 
     unsigned int x, y;
 
-    for (unsigned int ui = 0; ui < 4; ui++)
+    for (unsigned int ui = 0; ui < MAX_OPENCARD_COUNT; ui++)
     {
         if (m_kPokerPlayerInfo.akOpenCard[ui].GetCard() > Card::CARD_NONE)
         {
@@ -575,7 +528,7 @@ void Player::CalcJokboResultLast()
                 kCardBit.abCardBit[y][13] = true;
         }
     }
-    for (unsigned int ui = 0; ui < 3; ui++)
+    for (unsigned int ui = 0; ui < MAX_HIDDENCARD_COUNT; ui++)
     {
         if (m_kPokerPlayerInfo.akHiddenCard[ui].GetCard() > Card::CARD_NONE)
         {
@@ -586,6 +539,15 @@ void Player::CalcJokboResultLast()
                 kCardBit.abCardBit[y][13] = true;
         }
     }
+    if (m_kPokerPlayerInfo.kLastCard.GetCard() > Card::CARD_NONE)
+    {
+        y = (unsigned int)m_kPokerPlayerInfo.kLastCard.GetPicture();
+        x = m_kPokerPlayerInfo.kLastCard.GetNumber();
+        kCardBit.abCardBit[y][x] = true;
+        if (x == 0) // 스트레이트를 쉽게 알기 위한 편법
+            kCardBit.abCardBit[y][13] = true;
+    }
+
 
     PokerAI::CalcJokbo(kCardBit, m_kJokboResult);
 }

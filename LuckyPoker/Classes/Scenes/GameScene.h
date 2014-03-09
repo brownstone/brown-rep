@@ -28,6 +28,9 @@ public:
 	virtual void onEnter();
 	virtual void update(float delta);
 
+    void menuCallbackBetBtns(CCObject* pSender);
+
+
 	// implement the "static node()" method manually
 	CREATE_FUNC(PlayerLayer);
 

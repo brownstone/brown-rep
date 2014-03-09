@@ -88,6 +88,7 @@ void PlayerMan::Update(float delta)
             CalcJokboResult();
             FindSun();
             m_kPlayerManInfo.turnIndex = m_kPlayerManInfo.sunPlayerIndex;
+            m_akPokerPlayer[m_kPlayerManInfo.turnIndex].OnEnterTurn();
             break;
         }
         case POKERSEQUENCE_BET1:
@@ -100,6 +101,7 @@ void PlayerMan::Update(float delta)
             CalcJokboResult();
             FindSun();
             m_kPlayerManInfo.turnIndex = m_kPlayerManInfo.sunPlayerIndex;
+            m_akPokerPlayer[m_kPlayerManInfo.turnIndex].OnEnterTurn();
             break;
         }
         case POKERSEQUENCE_BET2:
@@ -112,6 +114,7 @@ void PlayerMan::Update(float delta)
             CalcJokboResult();
             FindSun();
             m_kPlayerManInfo.turnIndex = m_kPlayerManInfo.sunPlayerIndex;
+            m_akPokerPlayer[m_kPlayerManInfo.turnIndex].OnEnterTurn();
             break;
         }
         case POKERSEQUENCE_BET3:
@@ -125,6 +128,7 @@ void PlayerMan::Update(float delta)
             CalcJokboResult();
             FindSun();
             m_kPlayerManInfo.turnIndex = m_kPlayerManInfo.sunPlayerIndex;
+            m_akPokerPlayer[m_kPlayerManInfo.turnIndex].OnEnterTurn();
             break;
         }
         case POKERSEQUENCE_BET4:
@@ -163,41 +167,28 @@ void PlayerMan::Update(float delta)
 
 void PlayerMan::EachPlayerBetting(int betIndex, float delta)
 {
-	float thinkTime = m_akPokerPlayer[m_kPlayerManInfo.turnIndex].GetThinkTime();
-	if (thinkTime < 0.1f) {
-		m_akPokerPlayer[m_kPlayerManInfo.turnIndex].SetThinkTime(betIndex);
-		thinkTime = m_akPokerPlayer[m_kPlayerManInfo.turnIndex].GetThinkTime();
-	}
+    Player& player = m_akPokerPlayer[m_kPlayerManInfo.turnIndex];
+    BetAction betAction = player.Thinking(delta);
 
-	m_kPlayerManInfo.thinkTime += delta;
+    if (betAction == BET_ACTION_BETTING) 
+    {
+        bool result = player.DoBetting(betIndex);
 
-	if (m_kPlayerManInfo.thinkTime < thinkTime)
-	{
-		return;
-	}
+        if (result) {
+            unsigned int seedMoney = m_pkDealer->GetSeedMoney();
+            unsigned int callMoney = m_pkDealer->GetCallMoney();
+            unsigned int titleMoney = m_pkDealer->GetTitleMoney();
+            player.CalcBetMoney(betIndex, seedMoney, callMoney, titleMoney);
 
-	bool result = false;
-	switch (betIndex)
-	{
-	case 1: result = m_akPokerPlayer[m_kPlayerManInfo.turnIndex].DoBet1(); break;
-	case 2: result = m_akPokerPlayer[m_kPlayerManInfo.turnIndex].DoBet2(); break;
-	case 3: result = m_akPokerPlayer[m_kPlayerManInfo.turnIndex].DoBet3(); break;
-	case 4: result = m_akPokerPlayer[m_kPlayerManInfo.turnIndex].DoBet4(); break;
-	default: break;
-	}
-
-	if (result) {
-		unsigned int seedMoney = m_pkDealer->GetSeedMoney();
-		unsigned int callMoney = m_pkDealer->GetCallMoney();
-		unsigned int titleMoney = m_pkDealer->GetTitleMoney();
-		m_akPokerPlayer[m_kPlayerManInfo.turnIndex].CalcBetMoney(4, seedMoney, callMoney, titleMoney);
-
-		if (m_akPokerPlayer[m_kPlayerManInfo.turnIndex].IsRaiseUp(4)) {
-			m_pkDealer->AddRaiseCount();
-		}
-		SetTurnOver();
-		m_akPokerPlayer[m_kPlayerManInfo.turnIndex].ResetThinkTime();
-	}
+            if (player.IsRaiseUp(betIndex)) {
+                m_pkDealer->AddRaiseCount();
+            }
+        }
+    }
+    else if (betAction == BET_ACTION_DONE) 
+    {
+        SetTurnOver();
+    }
 }
 
 void PlayerMan::DoSchoolMoney()
@@ -539,8 +530,9 @@ void PlayerMan::SetTurnOver()
 		break;
 	}
 
+    m_akPokerPlayer[m_kPlayerManInfo.turnIndex].OnLeaveTurn();
 	m_kPlayerManInfo.turnIndex = uiNextTurnIndex;
-	m_kPlayerManInfo.thinkTime = 0;
+    m_akPokerPlayer[m_kPlayerManInfo.turnIndex].OnEnterTurn();
 }
 
 void PlayerMan::GetPlayerInfo(PokerPlayerInfo playerInfos[])

@@ -108,6 +108,9 @@
     <ClInclude Include="..\Classes\Model\PokerDefines.h">
       <Filter>Classes\Model</Filter>
     </ClInclude>
+    <ClInclude Include="..\Classes\ResourceString.h">
+      <Filter>Classes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="LuckyPoker.rc" />

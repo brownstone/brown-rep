@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "Assist/InstanceMan.h"
 #include "Model/MainLogic.h"
+#include "../ResourceString.h"
 
 bool GameBGLayer::init()
 {
@@ -199,6 +200,34 @@ bool PlayerLayer::init()
 		addChild(turnImg, 1, 301);
 	}
 
+    { // betting buttons
+
+        // ÇÏÇÁ  ÄõÅÍ
+        //  ÄÝ    »æ
+        // Ã¼Å©  ´ÙÀÌ
+        // ½ºÅµ
+        CCMenuItem* btn1 = CCMenuItemImage::create(s_pPathHalfOn,   s_pPathHalfOn,   s_pPathHalfOff,   this, menu_selector(PlayerLayer::menuCallbackBetBtns));
+        btn1->setUserData((void*)0x1);
+        CCMenuItem* btn2 = CCMenuItemImage::create(s_pPathQuaterOn, s_pPathQuaterOn, s_pPathQuaterOff, this, menu_selector(PlayerLayer::menuCallbackBetBtns));
+        btn2->setUserData((void*)0x2);
+        CCMenuItem* btn3 = CCMenuItemImage::create(s_pPathCallOn,   s_pPathCallOn,   s_pPathCallOff,   this, menu_selector(PlayerLayer::menuCallbackBetBtns));
+        btn3->setUserData((void*)0x3);
+        CCMenuItem* btn4 = CCMenuItemImage::create(s_pPathBbingOn,  s_pPathBbingOn,  s_pPathBbingOff,  this, menu_selector(PlayerLayer::menuCallbackBetBtns));
+        btn4->setUserData((void*)0x4);
+        CCMenuItem* btn5 = CCMenuItemImage::create(s_pPathCheckOn,  s_pPathCheckOn,  s_pPathCheckOff,  this, menu_selector(PlayerLayer::menuCallbackBetBtns));
+        btn5->setUserData((void*)0x5);
+        CCMenuItem* btn6 = CCMenuItemImage::create(s_pPathDieOn,    s_pPathDieOn,    s_pPathDieOff,    this, menu_selector(PlayerLayer::menuCallbackBetBtns));
+        btn6->setUserData((void*)0x6);
+        CCMenu* menu = CCMenu::create( btn1, btn2, btn3, btn4, btn5, btn6, NULL);
+        menu->alignItemsInColumns(2, 2, 2, NULL);
+
+
+        addChild(menu);
+        menu->setPosition(ccp(midXPos + 100, bottomYPos));
+
+    }
+
+
 
 	m_pMainLogic = InstanceMan::mainLogic->GetInstance();
 
@@ -206,6 +235,14 @@ bool PlayerLayer::init()
 
 	return true;
 }
+
+void PlayerLayer::menuCallbackBetBtns(CCObject* sender)
+{
+    void* userData = ((CCNode*)sender)->getUserData();
+    int aa = 0;
+    aa++;
+}
+
 
 
 void PlayerLayer::onEnter()

@@ -105,6 +105,16 @@ enum BetLimit
     BETLIMIT_FULL,
 };
 
+enum BetAction
+{
+    BET_ACTION_NONE,
+    BET_ACTION_THINK,
+    BET_ACTION_BETTING,
+    BET_ACTION_THROW,
+    BET_ACTION_DONE,
+    BET_ACTION_MAX,
+};
+
 struct PokerOption
 {
     unsigned int uiSeedMoney;
@@ -258,6 +268,10 @@ struct PokerPlayerInfo
 	bool			bSchoolMoney;
 	unsigned int	nTempSchoolMoney;
 	bool			bChoice;
+    BetAction       eBetAction;
+    float           fThinkTime;
+    float           fThrowTime;
+
 	Betting			eBet1;
 	unsigned int	nLastBet1Money;
 	unsigned int	nTempBet1Money;
@@ -300,6 +314,9 @@ struct PokerPlayerInfo
 		bSchoolMoney = false;
 		nTempSchoolMoney = 0;
 		bChoice = false;
+        eBetAction = BET_ACTION_NONE;
+        fThinkTime = 0.0f;
+        fThrowTime = 0.0f;
 		eBet1 = BETTING_NONE;
 		nLastBet1Money = 0;
 		nTempBet1Money = 0;
@@ -312,7 +329,6 @@ struct PokerPlayerInfo
 		eBet4 = BETTING_NONE;
 		nLastBet4Money = 0;
 		nTempBet4Money = 0;
-		thinkTime = 0;
 	}
 
 	bool Changed(const PokerPlayerInfo& rhs)
@@ -434,7 +450,6 @@ struct PlayerManInfo
 	unsigned int	sunPlayerIndex;
 	unsigned int	leftTopIndex;
 	unsigned int	turnIndex;
-	float thinkTime;
 
 	PlayerManInfo()
 	{
@@ -452,7 +467,6 @@ struct PlayerManInfo
 		sunPlayerIndex = INVALID_PLAYER_INDEX;
 		leftTopIndex = INVALID_PLAYER_INDEX;
 		turnIndex = INVALID_PLAYER_INDEX;
-		thinkTime = 0;
 	}
     bool Changed(const PlayerManInfo& rhs)
     {
@@ -503,7 +517,7 @@ struct TableInfo
 	{
 		szInformation[0] = 0;
 
-		sprintf(szInformation, " %d \n %d \n %d \n %d", seedMoney, titleMoney, callMoney, raiseCount);
+		sprintf(szInformation, " %d \n %d \n call: %d \n raise: %d", seedMoney, titleMoney, callMoney, raiseCount);
 	}
 };
 #endif // __POKER_DEFINES_H__

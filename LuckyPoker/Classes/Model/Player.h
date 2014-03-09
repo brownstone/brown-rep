@@ -34,13 +34,10 @@ public:
     PokerPlayerState GetPlayerState() const;
     
     void DoChoice();
-    bool DoBet1();
-    bool DoBet2();
-    bool DoBet3();
-    bool DoBet4();
-	void ResetThinkTime();
-	void SetThinkTime(int betIndex);
-	float GetThinkTime();
+    void OnEnterTurn();
+    void OnLeaveTurn();
+    BetAction Thinking(float delta);
+    bool DoBetting(int betIndex);
     
     bool IsDie() const;
 	bool IsSchoolMoneyDone() const;
