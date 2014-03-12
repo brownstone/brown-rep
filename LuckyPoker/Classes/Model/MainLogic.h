@@ -28,6 +28,9 @@ public:
     void GetPlayerManInfo(PlayerManInfo& playerManInfo);
 	PokerSequence GetSequence();
 
+    void SendPacket(BettingInput* betInput);
+    void ReceivePacket(BettingInput* betInput);
+
     
 private:
     static MainLogic* s_pLogic;

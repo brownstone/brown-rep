@@ -67,16 +67,16 @@ const static char* PokerSequenceStr [] = {
 
 enum Betting
 {
-	BETTING_NONE,
-	BETTING_CHECK,
-	BETTING_BBING,
-	BETTING_CALL,
-	BETTING_QUARTER,
-	BETTING_HALF,
-	BETTING_FULL,
-	BETTING_DOUBLE,
-	BETTING_ALLIN,
-	BETTING_DIE,
+	BETTING_NONE    = 0x0,
+	BETTING_CHECK   = 0x1,
+	BETTING_BBING   = 0x2,
+	BETTING_CALL    = 0x4,
+	BETTING_QUARTER = 0x8,
+	BETTING_HALF    = 0x10,
+	BETTING_FULL    = 0x20,
+	BETTING_DOUBLE  = 0x40,
+	//BETTING_ALLIN   = 0x80,
+	BETTING_DIE     = 0x80,
 };
 
 enum Jokbo
@@ -108,6 +108,7 @@ enum BetLimit
 enum BetAction
 {
     BET_ACTION_NONE,
+    BET_ACTION_THINK_PREPARE,
     BET_ACTION_THINK,
     BET_ACTION_BETTING,
     BET_ACTION_THROW,
@@ -255,6 +256,14 @@ struct DealCardInfo
 	unsigned char ucPlayerIndex;
 	unsigned char ucCard;
 };
+struct BettingInput
+{
+    unsigned char ucPlayerIndex;
+    unsigned char ucBetIndex;
+    unsigned char ucTurnCount;
+    unsigned char ucBetting;
+};
+
 
 struct PokerPlayerInfo
 {
@@ -268,9 +277,13 @@ struct PokerPlayerInfo
 	bool			bSchoolMoney;
 	unsigned int	nTempSchoolMoney;
 	bool			bChoice;
+
     BetAction       eBetAction;
     float           fThinkTime;
     float           fThrowTime;
+    bool            onMyTurn;
+    int             ePrepareBetting;
+
 
 	Betting			eBet1;
 	unsigned int	nLastBet1Money;
@@ -284,7 +297,6 @@ struct PokerPlayerInfo
 	Betting			eBet4;
 	unsigned int	nLastBet4Money;
 	unsigned int	nTempBet4Money;
-	float			thinkTime;
 
 	PokerPlayerInfo()
 	{
@@ -295,7 +307,6 @@ struct PokerPlayerInfo
 	{
 		nPlayerKey = 0;
 		nTotalMoney = 0;
-		thinkTime = 0;
 
 		ClearBettingInfo();
 	}
@@ -315,8 +326,10 @@ struct PokerPlayerInfo
 		nTempSchoolMoney = 0;
 		bChoice = false;
         eBetAction = BET_ACTION_NONE;
+        ePrepareBetting = 0;
         fThinkTime = 0.0f;
         fThrowTime = 0.0f;
+        onMyTurn = false;
 		eBet1 = BETTING_NONE;
 		nLastBet1Money = 0;
 		nTempBet1Money = 0;
@@ -342,7 +355,10 @@ struct PokerPlayerInfo
 		changed |= (eBet1 != rhs.eBet1);
 		changed |= (eBet2 != rhs.eBet2);
 		changed |= (eBet3 != rhs.eBet3);
-		changed |= (eBet4 != rhs.eBet4);
+        changed |= (eBet4 != rhs.eBet4);
+        changed |= (onMyTurn != rhs.onMyTurn);
+        changed |= (ePrepareBetting != rhs.ePrepareBetting);
+        
 
 		return changed;
 	}
@@ -382,7 +398,7 @@ struct PokerPlayerInfo
 		case BETTING_HALF:	strcat(szInformation, "B1_HA");	break;
 		case BETTING_FULL:	strcat(szInformation, "B1_FU");	break;
 		case BETTING_DOUBLE:	strcat(szInformation, "B1_DO");	break;
-		case BETTING_ALLIN:	strcat(szInformation, "B1_AL");	break;
+		//case BETTING_ALLIN:	strcat(szInformation, "B1_AL");	break;
 		case BETTING_DIE:	strcat(szInformation, "B1_DI");	break;
 		}
 		//sprintf_s(szCard, 128, "  %d", m_kPokerPlayerInfo.uiBet1Money);
@@ -450,6 +466,7 @@ struct PlayerManInfo
 	unsigned int	sunPlayerIndex;
 	unsigned int	leftTopIndex;
 	unsigned int	turnIndex;
+    unsigned int    turnCount;
 
 	PlayerManInfo()
 	{
@@ -463,16 +480,17 @@ struct PlayerManInfo
 	}
 	void Clear()
 	{
-		curPlayerIndex = INVALID_PLAYER_INDEX;
 		sunPlayerIndex = INVALID_PLAYER_INDEX;
 		leftTopIndex = INVALID_PLAYER_INDEX;
 		turnIndex = INVALID_PLAYER_INDEX;
+        turnCount = 0;
 	}
     bool Changed(const PlayerManInfo& rhs)
     {
         bool changed = false;
         changed |= (sunPlayerIndex != rhs.sunPlayerIndex);
         changed |= (turnIndex != rhs.turnIndex);
+        changed |= (turnCount != rhs.turnCount);
 
         return changed;
     }

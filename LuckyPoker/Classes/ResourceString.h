@@ -15,6 +15,9 @@ static const char s_pPathDieOn[]      = "Images/btn/die_on.png";
 static const char s_pPathDieOff[]     = "Images/btn/die_off.png";
 static const char s_pPathSkipOn[]     = "Images/btn/skip_on.png";
 static const char s_pPathSkipOff[]    = "Images/btn/skip_off.png";
+static const char s_pPathPBoxDefault[]= "Images/player_box_default.png";
+static const char s_pPathPBoxTurn[]   = "Images/player_box_turn.png";
+static const char s_pPathSun[]        = "Images/sun.png";
 
 
 #endif

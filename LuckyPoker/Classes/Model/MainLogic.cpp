@@ -41,6 +41,10 @@ void MainLogic::FreeInstance()
 
 void MainLogic::update(float delta)
 {
+    if (delta > 0.3f)
+    {
+        delta = 0.1f;
+    }
 	m_kRule.Update(delta);
 	m_kDealer.Update(delta);
 	m_kPlayerMan.Update(delta);
@@ -70,4 +74,16 @@ void MainLogic::GetPlayerManInfo(PlayerManInfo& playerManInfo)
 PokerSequence MainLogic::GetSequence()
 {
 	return m_kRule.GetCurPokerSequence();
+}
+
+void MainLogic::SendPacket(BettingInput* betInput)
+{
+    ReceivePacket(betInput);
+
+}
+
+void MainLogic::ReceivePacket(BettingInput* betInput)
+{
+    m_kPlayerMan.ReceivePacket(betInput);
+
 }

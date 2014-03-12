@@ -13,7 +13,7 @@ public:
     Player();
     virtual ~Player();
     
-    bool Init();
+    bool Init(Dealer* dealer);
     void Clear();
 
     void ClearBettingInfo();
@@ -34,10 +34,12 @@ public:
     PokerPlayerState GetPlayerState() const;
     
     void DoChoice();
-    void OnEnterTurn();
+    void OnEnterTurn(bool myTurn);
     void OnLeaveTurn();
-    BetAction Thinking(float delta);
-    bool DoBetting(int betIndex);
+    BetAction Thinking(int betIndex, float delta);
+    bool IsThinking();
+    void StopThinking();
+    bool DoBetting(int betIndex, Betting betting);
     
     bool IsDie() const;
 	bool IsSchoolMoneyDone() const;
@@ -75,12 +77,16 @@ public:
     void SetComputer();
     void Remove();
 
+private:
+    int GetPrepareBetting(int betIndex);
     
 protected:
 	PokerPlayerState	m_ePlayerState;
 	PokerPlayerInfo		m_kPokerPlayerInfo;
 
 	JokboResult			m_kJokboResult;
+
+    Dealer*             m_pkDealer;
 
 
 };

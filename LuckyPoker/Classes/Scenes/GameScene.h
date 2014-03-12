@@ -42,6 +42,9 @@ private:
     void DisplaySeq(PokerSequence seq);
     void DisplayPlayerMan(const PlayerManInfo& playerManInfo);
 	void HideHandCards();
+    void ShowBetBtns(bool show);
+    void ShowTurnSun(bool show);
+    void ReadyBtns(int betting);
 
 	int GetCardSpriteTag(int playerIndex, int cardIndex) const;
 	int GetJokboLabelTag(int playerIndex, int labelIndex) const;
@@ -56,6 +59,10 @@ private:
 	JokboResult		m_kPlayerJokbo[MAX_POKERPLAYER_COUNT];
 	TableInfo       m_kTableInfo;
 	PokerSequence   m_kPokerSequence;
+    bool            m_bMyBettingTurn;
+
+    int btnsTurnCount;
+    int btnsBetIndex;
 
 };
 

@@ -23,6 +23,7 @@ public:
     unsigned int GetCallMoney();
     unsigned int GetTitleMoney();
     void AddRaiseCount();
+    unsigned int GetRaiseCount();
 
 	void GetTableInfo(TableInfo& tableInfo);
 
@@ -49,7 +50,7 @@ private:
     unsigned int        m_nCardDeckIndex;
 
 	// table data
-	TableInfo      m_kTableInfo;
+	TableInfo           m_kTableInfo;
     //unsigned int        m_nSeedMoney;
     //unsigned int        m_nTitleMoney;
     //unsigned int        m_nCallMoney;

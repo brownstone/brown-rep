@@ -49,6 +49,8 @@ public:
 	void GetPlayerJokbo(JokboResult jokboInfos[]);
     void GetPlayerManInfo(PlayerManInfo& playerManInfo);
 
+    void ReceivePacket(BettingInput* betInput);
+
 
 protected:
 	void AddPlayer();

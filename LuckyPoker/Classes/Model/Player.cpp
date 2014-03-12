@@ -13,8 +13,9 @@ Player::~Player()
 {
 }
 
-bool Player::Init()
+bool Player::Init(Dealer* dealer)
 {
+    m_pkDealer = dealer;
     Clear();
 	return true;
 }
@@ -218,24 +219,100 @@ unsigned int Player::GetTempSchoolMoney()
 	return m_kPokerPlayerInfo.nTempSchoolMoney;
 }
 
-void Player::OnEnterTurn()
+void Player::OnEnterTurn(bool myTurn)
 {
-    m_kPokerPlayerInfo.eBetAction = BET_ACTION_THINK;
-    m_kPokerPlayerInfo.fThinkTime = 2.0f;
-    m_kPokerPlayerInfo.fThrowTime = 1.0f;
+    float thinkTime = 1.0f;
+    if (myTurn)
+    {
+        thinkTime = 10.0f;
+    }
+    m_kPokerPlayerInfo.eBetAction = BET_ACTION_THINK_PREPARE;
+    m_kPokerPlayerInfo.fThinkTime = thinkTime;
+    m_kPokerPlayerInfo.fThrowTime = 0.6f;
+    m_kPokerPlayerInfo.onMyTurn = myTurn;
 }
 
 void Player::OnLeaveTurn()
 {
-    ;
+    m_kPokerPlayerInfo.onMyTurn = false;
 }
 
-BetAction Player::Thinking(float delta)
+int Player::GetPrepareBetting(int betIndex)
+{
+    int result = BETTING_DIE;
+    unsigned int raiseCount = m_pkDealer->GetRaiseCount();
+    unsigned int callMoney = m_pkDealer->GetCallMoney();
+    unsigned int titleMoney = m_pkDealer->GetTitleMoney();
+    Betting ePriviousBetting = BETTING_NONE;
+    bool canQuater = ((unsigned int)(titleMoney * 0.25f) < m_kPokerPlayerInfo.nTotalMoney);
+    bool canHalf = ((unsigned int)(titleMoney * 0.5f) < m_kPokerPlayerInfo.nTotalMoney);
+
+    if (betIndex == 1) 
+        ePriviousBetting = m_kPokerPlayerInfo.eBet1;
+    else if (betIndex == 2)
+        ePriviousBetting = m_kPokerPlayerInfo.eBet2;
+    else if (betIndex == 3)
+        ePriviousBetting = m_kPokerPlayerInfo.eBet3;
+    else if (betIndex == 4)
+        ePriviousBetting = m_kPokerPlayerInfo.eBet4;
+
+    if (raiseCount == 0)
+    {   // 첵, 삥, 쿼터, 하프, 풀을 할수 있다 // 콜, 레이스는 할수 없다.
+        result = BETTING_BBING | BETTING_CHECK | BETTING_QUARTER | BETTING_HALF | BETTING_DIE;
+    }
+    else
+    {
+        if (ePriviousBetting == BETTING_CALL || ePriviousBetting == BETTING_CHECK)
+        {   // 콜이냐 다이냐?
+            result = BETTING_CALL | BETTING_DIE;
+        }
+        else //  if (ePriviousBetting == BETTING_QUARTER || ePriviousBetting == BETTING_HALF || ePriviousBetting == BETTING_FULL)
+        {
+            // 전에 레이스였기 때문에 더 레이스할수 있다
+            // 처음할때, 삥, 쿼터, 하프, 풀 (체크와 콜제외)
+            // 선택은 콜, 레이스, 다이...
+
+            if (raiseCount < 2)
+            {
+                result = BETTING_CALL | BETTING_QUARTER | BETTING_HALF | BETTING_DIE;
+            }
+            else
+            {
+                result = BETTING_CALL | BETTING_DIE;
+            }
+        }
+    }
+
+    if (!canHalf) 
+    {
+        result &= ~BETTING_HALF;
+    }
+    if (!canQuater) 
+    {
+        result &= ~BETTING_QUARTER;
+    }
+
+    return result;
+}
+
+BetAction Player::Thinking(int betIndex, float delta)
 {
     switch (m_kPokerPlayerInfo.eBetAction)
     {
+    case BET_ACTION_THINK_PREPARE:
+        m_kPokerPlayerInfo.ePrepareBetting = (Betting)GetPrepareBetting(betIndex);
+        m_kPokerPlayerInfo.eBetAction = BET_ACTION_THINK;
+        break;
     case BET_ACTION_THINK: 
         m_kPokerPlayerInfo.fThinkTime -= delta;
+        if (m_kPokerPlayerInfo.onMyTurn) 
+        {
+            if (m_kPokerPlayerInfo.fThinkTime < 0.5f)
+            {
+                m_kPokerPlayerInfo.onMyTurn = false;
+            }
+
+        }
         if (m_kPokerPlayerInfo.fThinkTime < 0.0f) 
         {
             m_kPokerPlayerInfo.eBetAction = BET_ACTION_BETTING;
@@ -257,13 +334,23 @@ BetAction Player::Thinking(float delta)
     return m_kPokerPlayerInfo.eBetAction;
 }
 
+bool Player::IsThinking()
+{
+    return (m_kPokerPlayerInfo.eBetAction == BET_ACTION_THINK);
+}
+
+void Player::StopThinking()
+{
+    m_kPokerPlayerInfo.eBetAction = BET_ACTION_THROW;
+}
+
 Betting Player::GetBetting(Betting ePriviousBetting) const
 {
 	// 내가 갖고 있는 금액과 카드와 상대방 카드를 보고 좀더 생각하는 코드가 있어야한다.
 
     const Betting BET_LIMIT = BETTING_QUARTER;
 	Betting eResult = BETTING_NONE;
-	unsigned int uiRaiseCount = 0;
+    unsigned int uiRaiseCount = m_pkDealer->GetRaiseCount();
 
 	if (uiRaiseCount == 0)
 	{
@@ -335,12 +422,22 @@ Betting Player::GetBetting(Betting ePriviousBetting) const
 	return eResult;
 }
 
-bool Player::DoBetting(int betIndex)
+bool Player::DoBetting(int betIndex, Betting betting)
 {
     bool bTurnOver = false;
     // 1. 나이면 ui를 호출하고 기다린다.
     // 2. 컴퓨터는 끊긴넘이면 마스터가 대신 해준다.
     // 3. 상대방이면 한없이 기다린다.
+    Betting* bettingRef = 0;
+    if (betIndex == 1) 
+        bettingRef = &m_kPokerPlayerInfo.eBet1;
+    else if (betIndex == 2)
+        bettingRef = &m_kPokerPlayerInfo.eBet2;
+    else if (betIndex == 3)
+        bettingRef = &m_kPokerPlayerInfo.eBet3;
+    else if (betIndex == 4)
+        bettingRef = &m_kPokerPlayerInfo.eBet4;
+
 
     switch (m_ePlayerState)
     {
@@ -352,14 +449,41 @@ bool Player::DoBetting(int betIndex)
             // 하염없이 기다린다.
             // 다른사용자이면 자연적으로 기다린다.
             //BiUiManager::GetInst()->
-            if (betIndex == 1) 
-                m_kPokerPlayerInfo.eBet1 = GetBetting(m_kPokerPlayerInfo.eBet1);
-            else if (betIndex == 2)
-                m_kPokerPlayerInfo.eBet2 = GetBetting(m_kPokerPlayerInfo.eBet2);
-            else if (betIndex == 3)
-                m_kPokerPlayerInfo.eBet3 = GetBetting(m_kPokerPlayerInfo.eBet3);
-            else if (betIndex == 4)
-                m_kPokerPlayerInfo.eBet4 = GetBetting(m_kPokerPlayerInfo.eBet4);
+
+            if (betting == BETTING_NONE)
+                *bettingRef = GetBetting(*bettingRef);
+            else 
+                *bettingRef = betting;
+
+            //if (betIndex == 1) 
+            //{
+            //    if (betting == BETTING_NONE)
+            //        m_kPokerPlayerInfo.eBet1 = GetBetting(m_kPokerPlayerInfo.eBet1);
+            //    else 
+            //        m_kPokerPlayerInfo.eBet1 = betting;
+
+            //}
+            //else if (betIndex == 2)
+            //{
+            //    if (betting == BETTING_NONE)
+            //        m_kPokerPlayerInfo.eBet2 = GetBetting(m_kPokerPlayerInfo.eBet2);
+            //    else 
+            //        m_kPokerPlayerInfo.eBet2 = betting;
+            //}
+            //else if (betIndex == 3)
+            //{
+            //    if (betting == BETTING_NONE)
+            //        m_kPokerPlayerInfo.eBet3 = GetBetting(m_kPokerPlayerInfo.eBet3);
+            //    else 
+            //        m_kPokerPlayerInfo.eBet3 = betting;
+            //}
+            //else if (betIndex == 4)
+            //{
+            //    if (betting == BETTING_NONE)
+            //        m_kPokerPlayerInfo.eBet4 = GetBetting(m_kPokerPlayerInfo.eBet4);
+            //    else 
+            //        m_kPokerPlayerInfo.eBet4 = betting;
+            //}
 
             bTurnOver = true;
             break;
@@ -367,14 +491,15 @@ bool Player::DoBetting(int betIndex)
     case PLAYERSTATE_COMPUTER:
     case PLAYERSTATE_DISCONNECTER:
         {
-            if (betIndex == 1) 
-                m_kPokerPlayerInfo.eBet1 = GetBetting(m_kPokerPlayerInfo.eBet1);
-            else if (betIndex == 2)
-                m_kPokerPlayerInfo.eBet2 = GetBetting(m_kPokerPlayerInfo.eBet2);
-            else if (betIndex == 3)
-                m_kPokerPlayerInfo.eBet3 = GetBetting(m_kPokerPlayerInfo.eBet3);
-            else if (betIndex == 4)
-                m_kPokerPlayerInfo.eBet4 = GetBetting(m_kPokerPlayerInfo.eBet4);
+            *bettingRef = GetBetting(*bettingRef);
+            //if (betIndex == 1) 
+            //    m_kPokerPlayerInfo.eBet1 = GetBetting(m_kPokerPlayerInfo.eBet1);
+            //else if (betIndex == 2)
+            //    m_kPokerPlayerInfo.eBet2 = GetBetting(m_kPokerPlayerInfo.eBet2);
+            //else if (betIndex == 3)
+            //    m_kPokerPlayerInfo.eBet3 = GetBetting(m_kPokerPlayerInfo.eBet3);
+            //else if (betIndex == 4)
+            //    m_kPokerPlayerInfo.eBet4 = GetBetting(m_kPokerPlayerInfo.eBet4);
             bTurnOver = true;
             break;
         }

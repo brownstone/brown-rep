@@ -132,6 +132,13 @@ bool PlayerLayer::init()
 	playerPosX[3] = leftXPos;	playerPosY[3] = midYPos;
 	playerPosX[4] = leftXPos;	playerPosY[4] = topYPos;
 
+    for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+    {
+        CCSprite* pbox = CCSprite::create(s_pPathPBoxDefault);
+        pbox->setPosition(ccp(playerPosX[i], playerPosY[i]));
+        addChild(pbox, 1);
+    }
+
 
 	CCLabelTTF* pLabel = CCLabelTTF::create("Player 1", "Arial", 20);
 	pLabel->setPosition(ccp(origin.x + playerPosX[0], origin.y + playerPosY[0]));
@@ -188,16 +195,17 @@ bool PlayerLayer::init()
 			}
 		}
 	}
-	{ // sun, turn
-		CCSprite* sunImg = CCSprite::create("Images/sun.png");
+	{ // turn, sun
+        CCSprite* turnImg = CCSprite::create(s_pPathPBoxTurn);
+        turnImg->setPosition(ccp(playerPosX[0], playerPosY[0]));
+        turnImg->setVisible(false);
+        addChild(turnImg, 1, 301);
+
+        CCSprite* sunImg = CCSprite::create(s_pPathSun);
 		sunImg->setPosition(ccp(playerPosX[0], playerPosY[0]));
 		sunImg->setVisible(false);
 		addChild(sunImg, 1, 300);
 
-		CCSprite* turnImg = CCSprite::create("Images/turn.png");
-		turnImg->setPosition(ccp(playerPosX[0], playerPosY[0]));
-		turnImg->setVisible(false);
-		addChild(turnImg, 1, 301);
 	}
 
     { // betting buttons
@@ -207,40 +215,80 @@ bool PlayerLayer::init()
         // 체크  다이
         // 스킵
         CCMenuItem* btn1 = CCMenuItemImage::create(s_pPathHalfOn,   s_pPathHalfOn,   s_pPathHalfOff,   this, menu_selector(PlayerLayer::menuCallbackBetBtns));
-        btn1->setUserData((void*)0x1);
+        btn1->setUserData((void*)1);
+        btn1->setTag(401);
         CCMenuItem* btn2 = CCMenuItemImage::create(s_pPathQuaterOn, s_pPathQuaterOn, s_pPathQuaterOff, this, menu_selector(PlayerLayer::menuCallbackBetBtns));
-        btn2->setUserData((void*)0x2);
+        btn2->setUserData((void*)2);
+        btn2->setTag(402);
         CCMenuItem* btn3 = CCMenuItemImage::create(s_pPathCallOn,   s_pPathCallOn,   s_pPathCallOff,   this, menu_selector(PlayerLayer::menuCallbackBetBtns));
-        btn3->setUserData((void*)0x3);
+        btn3->setUserData((void*)3);
+        btn3->setTag(403);
         CCMenuItem* btn4 = CCMenuItemImage::create(s_pPathBbingOn,  s_pPathBbingOn,  s_pPathBbingOff,  this, menu_selector(PlayerLayer::menuCallbackBetBtns));
-        btn4->setUserData((void*)0x4);
+        btn4->setUserData((void*)4);
+        btn4->setTag(404);
         CCMenuItem* btn5 = CCMenuItemImage::create(s_pPathCheckOn,  s_pPathCheckOn,  s_pPathCheckOff,  this, menu_selector(PlayerLayer::menuCallbackBetBtns));
-        btn5->setUserData((void*)0x5);
+        btn5->setUserData((void*)5);
+        btn5->setTag(405);
         CCMenuItem* btn6 = CCMenuItemImage::create(s_pPathDieOn,    s_pPathDieOn,    s_pPathDieOff,    this, menu_selector(PlayerLayer::menuCallbackBetBtns));
-        btn6->setUserData((void*)0x6);
-        CCMenu* menu = CCMenu::create( btn1, btn2, btn3, btn4, btn5, btn6, NULL);
-        menu->alignItemsInColumns(2, 2, 2, NULL);
+        btn6->setUserData((void*)6);
+        btn6->setTag(406);
+        CCMenu* menu = CCMenu::create(btn1, btn2, btn3, btn4, btn5, btn6, NULL);
+        menu->setVisible(false);
 
+        static const int BTN_WIDTH = 64 + 2;
+        static const int BTN_HEIGHT = 32 + 2;
+        btn1->setPosition(ccp(BTN_WIDTH * 0, BTN_HEIGHT * 2)); btn1->setAnchorPoint(ccp(0, 0));
+        btn2->setPosition(ccp(BTN_WIDTH * 1, BTN_HEIGHT * 2)); btn2->setAnchorPoint(ccp(0, 0));
+        btn3->setPosition(ccp(BTN_WIDTH * 0, BTN_HEIGHT * 1)); btn3->setAnchorPoint(ccp(0, 0));
+        btn4->setPosition(ccp(BTN_WIDTH * 1, BTN_HEIGHT * 1)); btn4->setAnchorPoint(ccp(0, 0));
+        btn5->setPosition(ccp(BTN_WIDTH * 0, BTN_HEIGHT * 0)); btn5->setAnchorPoint(ccp(0, 0));
+        btn6->setPosition(ccp(BTN_WIDTH * 1, BTN_HEIGHT * 0)); btn6->setAnchorPoint(ccp(0, 0));
 
-        addChild(menu);
-        menu->setPosition(ccp(midXPos + 100, bottomYPos));
+        addChild(menu, 3, 400);
+        menu->setPosition(ccp(rightXPos - 75, bottomYPos - 50));
 
     }
-
-
 
 	m_pMainLogic = InstanceMan::mainLogic->GetInstance();
 
 	m_kPokerSequence = POKERSEQUENCE_NONE;
+    m_bMyBettingTurn = false;
 
 	return true;
 }
 
 void PlayerLayer::menuCallbackBetBtns(CCObject* sender)
 {
+    ReadyBtns(0);
+
     void* userData = ((CCNode*)sender)->getUserData();
-    int aa = 0;
-    aa++;
+    Betting bet = BETTING_DIE;
+    switch ((int)userData)
+    {  
+    case 1: bet = BETTING_HALF; break;
+    case 2: bet = BETTING_QUARTER; break;
+    case 3: bet = BETTING_CALL; break;
+    case 4: bet = BETTING_BBING; break;
+    case 5: bet = BETTING_CHECK; break;
+    case 6: bet = BETTING_DIE; break;
+    default: assert(0); break;
+    }
+
+    BettingInput betInput;
+    betInput.ucPlayerIndex = 2;
+    betInput.ucBetting = (unsigned char)bet;
+
+    if (m_kPokerSequence == POKERSEQUENCE_BET1)
+        betInput.ucBetIndex = 1;
+    else if (m_kPokerSequence == POKERSEQUENCE_BET2)
+        betInput.ucBetIndex = 2;
+    else if (m_kPokerSequence == POKERSEQUENCE_BET3)
+        betInput.ucBetIndex = 3;
+    else if (m_kPokerSequence == POKERSEQUENCE_BET4)
+        betInput.ucBetIndex = 4;
+    betInput.ucTurnCount = m_kPlayerManInfo.turnCount;
+
+    m_pMainLogic->SendPacket(&betInput);
 }
 
 
@@ -255,76 +303,229 @@ void PlayerLayer::update(float delta)
 {
 	CCLayer::update(delta);
 
-
-	{ // player info
-		PokerPlayerInfo playerInfos[MAX_POKERPLAYER_COUNT];
-		m_pMainLogic->GetPlayerInfo(playerInfos);
-
-		for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
-		{
-			bool changed = m_kPlayerInfos[i].Changed(playerInfos[i]);
-			if (changed)
-			{
-				DisplayPlayer(i, playerInfos[i]);
-				m_kPlayerInfos[i] = playerInfos[i];
-			}
-		}
-	}
-
-	{ // jokbo info
-		JokboResult jokboInfos[MAX_POKERPLAYER_COUNT];
-		m_pMainLogic->GetPlayerJokboInfo(jokboInfos);
-
-		for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
-		{
-			bool changed = m_kPlayerJokbo[i].Changed(jokboInfos[i]);
-			if (changed)
-			{
-				DisplayPlayerJokbo(i, jokboInfos[i]);
-				m_kPlayerJokbo[i] = jokboInfos[i];
-			}
-		}
-	}
+    bool playerChanged = false;
+    bool jokboChanged = false;
+    bool dealChanged = false;
+    bool seqChanged = false;
+    bool playerManChanged = false;
 
 
-	{ // dealer info
-		TableInfo tableInfo;
-		m_pMainLogic->GetDealerInfo(tableInfo);
-		bool changed = m_kTableInfo.Changed(tableInfo);
+	// player info
+	PokerPlayerInfo playerInfos[MAX_POKERPLAYER_COUNT];
+	m_pMainLogic->GetPlayerInfo(playerInfos);
+
+	for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+	{
+		bool changed = m_kPlayerInfos[i].Changed(playerInfos[i]);
+        playerChanged |= changed;
 		if (changed)
 		{
-			DisplayDealer(tableInfo);
-			m_kTableInfo = tableInfo;
+			DisplayPlayer(i, playerInfos[i]);
 		}
-
 	}
 
-	{ // sequence
-		PokerSequence seq = m_pMainLogic->GetSequence();
-		bool changed = (m_kPokerSequence != seq);
+	// jokbo info
+	JokboResult jokboInfos[MAX_POKERPLAYER_COUNT];
+	m_pMainLogic->GetPlayerJokboInfo(jokboInfos);
+
+	for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+	{
+		bool changed = m_kPlayerJokbo[i].Changed(jokboInfos[i]);
+        jokboChanged |= changed;
 		if (changed)
 		{
-			DisplaySeq(seq);
-
-			if (seq == POKERSEQUENCE_START || seq == POKERSEQUENCE_RESULT)
-			{
-				HideHandCards();
-			}
-			m_kPokerSequence = seq;
+			DisplayPlayerJokbo(i, jokboInfos[i]);
 		}
 	}
 
-    { // player manager infos. sun/turn
-        PlayerManInfo playerManInfo;
-        m_pMainLogic->GetPlayerManInfo(playerManInfo);
 
-        bool changed = m_kPlayerManInfo.Changed(playerManInfo);
-        if (changed) 
+	// dealer info
+	TableInfo tableInfo;
+	m_pMainLogic->GetDealerInfo(tableInfo);
+	bool dealerChanged = m_kTableInfo.Changed(tableInfo);
+	if (dealerChanged)
+	{
+		DisplayDealer(tableInfo);
+	}
+
+	// sequence
+	PokerSequence seq = m_pMainLogic->GetSequence();
+	seqChanged = (m_kPokerSequence != seq);
+	if (seqChanged)
+	{
+		DisplaySeq(seq);
+
+		if (seq == POKERSEQUENCE_START || seq == POKERSEQUENCE_RESULT)
+		{
+            btnsTurnCount = 0;
+            btnsBetIndex = 0;
+			HideHandCards();
+            ShowBetBtns(false);
+            ShowTurnSun(false);
+		}
+
+        if (seq == POKERSEQUENCE_BET1 || seq == POKERSEQUENCE_BET2 ||
+            seq == POKERSEQUENCE_BET3 || seq == POKERSEQUENCE_BET4)
         {
-            DisplayPlayerMan(playerManInfo);
-            m_kPlayerManInfo = playerManInfo;
+            ShowBetBtns(true);
+            ReadyBtns(0);
+            ShowTurnSun(true);
         }
 
+        if (m_kPokerSequence == POKERSEQUENCE_BET1 || m_kPokerSequence == POKERSEQUENCE_BET2 ||
+            m_kPokerSequence == POKERSEQUENCE_BET3 || m_kPokerSequence == POKERSEQUENCE_BET4)
+        {
+            ShowBetBtns(false);
+            ShowTurnSun(false);
+        }
+	}
+
+    // player manager infos. sun/turn
+    PlayerManInfo playerManInfo;
+    m_pMainLogic->GetPlayerManInfo(playerManInfo);
+
+    playerManChanged = m_kPlayerManInfo.Changed(playerManInfo);
+    if (playerManChanged) 
+    {
+        DisplayPlayerMan(playerManInfo);
+    }
+
+    {// on enter turn 을 어떻게 알아낼 것인가?
+        if (m_kPokerSequence == POKERSEQUENCE_BET1 || m_kPokerSequence == POKERSEQUENCE_BET2 ||
+            m_kPokerSequence == POKERSEQUENCE_BET3 || m_kPokerSequence == POKERSEQUENCE_BET4)
+        {
+            enum BtnState
+            {
+                BS_NONE,
+                BS_READY,
+                BS_WAIT,
+                BS_DISABLE,
+            };
+            BtnState bsState = BS_NONE;
+            bool readyBtns = false;
+            PokerPlayerInfo& turnPlayerInfo = playerInfos[m_kPlayerManInfo.turnIndex];
+            if (turnPlayerInfo.onMyTurn)
+            {
+                bsState = BS_WAIT;
+                if (btnsBetIndex != m_kPokerSequence || btnsTurnCount != m_kPlayerManInfo.turnCount)
+                {
+                    bsState = BS_READY;
+                }
+            }
+            else 
+            {
+                bsState = BS_DISABLE;
+            }
+
+            if (bsState == BS_READY)
+            {
+                btnsBetIndex = m_kPokerSequence;
+                btnsTurnCount = m_kPlayerManInfo.turnCount;
+                ReadyBtns(turnPlayerInfo.ePrepareBetting);
+            }
+            else if (bsState == BS_DISABLE)
+            {
+                ReadyBtns(0);
+            }
+        }
+    }
+
+    if (playerChanged)
+    {
+        for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+        {
+            m_kPlayerInfos[i] = playerInfos[i];
+        }
+    }
+
+    if (jokboChanged)
+    {
+        for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+        {
+            m_kPlayerJokbo[i] = jokboInfos[i];
+        }
+    }
+    if (dealerChanged)
+    {
+        m_kTableInfo = tableInfo;
+    }
+    if (seqChanged)
+    {
+        m_kPokerSequence = seq;
+    }
+    if (playerManChanged) 
+    {
+        m_kPlayerManInfo = playerManInfo;
+    }
+}
+
+void PlayerLayer::ShowBetBtns(bool show)
+{
+    int menuTag = 400;
+    CCMenu* menu = (CCMenu*)getChildByTag(menuTag);
+    if (menu)
+    {
+        menu->setVisible(show);
+    }
+}
+
+void PlayerLayer::ShowTurnSun(bool show)
+{
+    CCSprite* trunImg = (CCSprite*)getChildByTag(300);
+    if (trunImg)
+        trunImg->setVisible(show);
+
+    CCSprite* sunImg = (CCSprite*)getChildByTag(301);
+    if (sunImg)
+        sunImg->setVisible(show);
+}
+
+void PlayerLayer::ReadyBtns(int betting)
+{
+    if (betting > 0)
+    {
+        int aa = 0;
+        aa++;
+    }
+    int menuTag = 400;
+    CCMenu* menu = (CCMenu*)getChildByTag(menuTag);
+    if (menu)
+    {
+        CCMenuItem* btn1 = (CCMenuItem*)menu->getChildByTag(401);
+        CCMenuItem* btn2 = (CCMenuItem*)menu->getChildByTag(402);
+        CCMenuItem* btn3 = (CCMenuItem*)menu->getChildByTag(403);
+        CCMenuItem* btn4 = (CCMenuItem*)menu->getChildByTag(404);
+        CCMenuItem* btn5 = (CCMenuItem*)menu->getChildByTag(405);
+        CCMenuItem* btn6 = (CCMenuItem*)menu->getChildByTag(406);
+
+        // 하프  쿼터
+        //  콜    삥
+        // 체크  다이
+
+        btn1->setEnabled(false);
+        btn2->setEnabled(false);
+        btn3->setEnabled(false);
+        btn4->setEnabled(false);
+        btn5->setEnabled(false);
+        btn6->setEnabled(false);
+
+        if (betting & BETTING_HALF)
+            btn1->setEnabled(true);
+
+        if (betting & BETTING_QUARTER)
+            btn2->setEnabled(true);
+
+        if (betting & BETTING_CALL)
+            btn3->setEnabled(true);
+
+        if (betting & BETTING_BBING)
+            btn4->setEnabled(true);
+
+        if (betting & BETTING_CHECK)
+            btn5->setEnabled(true);
+
+        if (betting & BETTING_DIE)
+            btn6->setEnabled(true);
     }
 }
 
@@ -437,12 +638,12 @@ void PlayerLayer::DisplaySeq(PokerSequence seq)
 void PlayerLayer::DisplayPlayerMan(const PlayerManInfo& playerManInfo)
 {
     CCPoint sunPlayerPos(GetPlayerPos(playerManInfo.sunPlayerIndex));
+    sunPlayerPos.y += 46;
     CCSprite* sunImg = (CCSprite*)getChildByTag(300);
     sunImg->setVisible(true);
     sunImg->setPosition(sunPlayerPos);
 
     CCPoint turnPlayerPos(GetPlayerPos(playerManInfo.turnIndex));
-    turnPlayerPos.x += 20;
     CCSprite* turnImg = (CCSprite*)getChildByTag(301);
     turnImg->setVisible(true);
     turnImg->setPosition(turnPlayerPos);

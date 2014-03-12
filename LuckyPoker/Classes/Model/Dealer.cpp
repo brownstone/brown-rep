@@ -302,6 +302,11 @@ void Dealer::AddRaiseCount()
     m_kTableInfo.raiseCount++;
 }
 
+unsigned int Dealer::GetRaiseCount()
+{
+    return m_kTableInfo.raiseCount;
+}
+
 void Dealer::GetTableInfo(TableInfo& tableInfo)
 {
 	tableInfo = m_kTableInfo;
