@@ -54,7 +54,7 @@ void PokerRule::UpdateSequence(float delta)
 	static const float BET4_TIME = 60.0f;
 	static const float HILOW_TIME = 2.0f;
 	static const float OPEN_TIME = 0.0f;
-	static const float SETTLE_TIME = 10.0f;
+	static const float SETTLE_TIME = 4.0f;
 	static const float RESULT_TIME = 5.0f;
 	static const float END_TIME = 0.0f;
 

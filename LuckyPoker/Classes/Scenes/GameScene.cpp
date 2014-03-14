@@ -75,15 +75,25 @@ CCPoint PlayerLayer::GetPlayerPos(int playerIndex) const
     }
 
     CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
+    CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
-    static int playerBoxWidth = 40;
-    //static int playerBoxHeight = 20;
-    static int leftXPos = 50;
-    static int midXPos = visibleSize.width / 2 - playerBoxWidth / 2;
-    static int rightXPos = visibleSize.width - playerBoxWidth - 20;
-    static int topYPos    = 3 * visibleSize.height / 3 - 60;
-    static int midYPos    = 2 * visibleSize.height / 3 - 60;
-    static int bottomYPos = 1 * visibleSize.height / 3 - 40;
+    CCSize playerBoxSize(100,100);
+    // visible size 320.0, 480.0
+
+    static int LEFT_MARGIN  = 10;
+    // x
+    static int playerBoxWidth = 100;
+    static int leftXPos = playerBoxWidth / 2 + LEFT_MARGIN;
+    static int midXPos = visibleSize.width / 2 - LEFT_MARGIN;
+    static int rightXPos = visibleSize.width - playerBoxWidth / 2 - LEFT_MARGIN;
+
+    static int TABLEHEIGHT = visibleSize.height - 40;
+    static int TOP_MARGIN  = 30;
+    // y
+    static int playerBoxHeight = 100;
+    static int topYPos    = 3 * TABLEHEIGHT / 3 - playerBoxHeight / 2 - 20;
+    static int midYPos    = 2 * TABLEHEIGHT / 3 - playerBoxHeight / 2 - 20;
+    static int bottomYPos = 1 * TABLEHEIGHT / 3 - playerBoxHeight / 2 - 20;
 
 
     int playerPosX[5];
@@ -114,50 +124,47 @@ bool PlayerLayer::init()
 	/////////////////////////////
 	// 2. add a menu item with "X" image, which is clicked to quit the program
 	//    you may modify it.
-	static int playerBoxWidth = 40;
-	//static int playerBoxHeight = 20;
-	static int leftXPos = 50;
-	static int midXPos = visibleSize.width / 2 - playerBoxWidth / 2;
-	static int rightXPos = visibleSize.width - playerBoxWidth - 20;
-	static int topYPos    = 3 * visibleSize.height / 3 - 60;
-	static int midYPos    = 2 * visibleSize.height / 3 - 60;
-	static int bottomYPos = 1 * visibleSize.height / 3 - 40;
 
+    static int midXPos = visibleSize.width / 2;
+    static int rightXPos = visibleSize.width - 100 - 20;
+    static int topYPos    = 3 * visibleSize.height / 3 - 60;
+    static int midYPos    = 2 * visibleSize.height / 3 - 60;
+    static int bottomYPos = 1 * visibleSize.height / 3 - 40;
 
-	int playerPosX[5];
-	int playerPosY[5];
-	playerPosX[0] = rightXPos;	playerPosY[0] = topYPos;
-	playerPosX[1] = rightXPos;	playerPosY[1] = midYPos;
-	playerPosX[2] = midXPos;	playerPosY[2] = bottomYPos;
-	playerPosX[3] = leftXPos;	playerPosY[3] = midYPos;
-	playerPosX[4] = leftXPos;	playerPosY[4] = topYPos;
 
     for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
     {
         CCSprite* pbox = CCSprite::create(s_pPathPBoxDefault);
-        pbox->setPosition(ccp(playerPosX[i], playerPosY[i]));
+        pbox->setPosition(GetPlayerPos(i));
         addChild(pbox, 1);
     }
 
 
+    CCPoint playerBoxPos[MAX_POKERPLAYER_COUNT];
+    for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+    {
+        playerBoxPos[i] = GetPlayerPos(i);
+    }
+
+
 	CCLabelTTF* pLabel = CCLabelTTF::create("Player 1", "Arial", 20);
-	pLabel->setPosition(ccp(origin.x + playerPosX[0], origin.y + playerPosY[0]));
+	pLabel->setPosition(ccp(playerBoxPos[0].x,  playerBoxPos[0].y + 20));
 	this->addChild(pLabel, 1, 0);
 
 	pLabel = CCLabelTTF::create("Player 2", "Arial", 20);
-	pLabel->setPosition(ccp(origin.x + playerPosX[1], origin.y + playerPosY[1] - 10));
+	pLabel->setPosition(ccp(playerBoxPos[1].x,  playerBoxPos[1].y + 20));
 	this->addChild(pLabel, 1, 1);
 
 	pLabel = CCLabelTTF::create("Player 3", "Arial", 20);
-	pLabel->setPosition(ccp(origin.x + playerPosX[2], origin.y + playerPosY[2]));
+	pLabel->setPosition(ccp(playerBoxPos[2].x,  playerBoxPos[2].y + 20));
 	this->addChild(pLabel, 1, 2);
 
 	pLabel = CCLabelTTF::create("Player 4", "Arial", 20);
-	pLabel->setPosition(ccp(origin.x + playerPosX[3], origin.y + playerPosY[3] - 10));
+	pLabel->setPosition(ccp(playerBoxPos[3].x,  playerBoxPos[3].y + 20));
 	this->addChild(pLabel, 1, 3);
 
 	pLabel = CCLabelTTF::create("Player 5", "Arial", 20);
-	pLabel->setPosition(ccp(origin.x + playerPosX[4], origin.y + playerPosY[4]));
+	pLabel->setPosition(ccp(playerBoxPos[4].x,  playerBoxPos[4].y + 20));
 	this->addChild(pLabel, 1, 4);
 
 	pLabel = CCLabelTTF::create("Dealer", "Arial", 20);
@@ -168,6 +175,33 @@ bool PlayerLayer::init()
 	pLabel->setPosition(ccp(origin.x + midXPos, origin.y + topYPos + 30));
 	this->addChild(pLabel, 1, 20);
 
+
+    pLabel = CCLabelTTF::create(" ", "Arial", 18);
+    pLabel->setPosition(ccp(playerBoxPos[0].x,  playerBoxPos[0].y + 60));
+    pLabel->setColor(ccBLUE);
+    this->addChild(pLabel, 1, 500);
+
+    pLabel = CCLabelTTF::create(" ", "Arial", 18);
+    pLabel->setPosition(ccp(playerBoxPos[1].x,  playerBoxPos[1].y + 60));
+    pLabel->setColor(ccBLUE);
+    this->addChild(pLabel, 1, 501);
+
+    pLabel = CCLabelTTF::create(" ", "Arial", 18);
+    pLabel->setPosition(ccp(playerBoxPos[2].x,  playerBoxPos[2].y + 60));
+    pLabel->setColor(ccBLUE);
+    this->addChild(pLabel, 1, 502);
+
+    pLabel = CCLabelTTF::create(" ", "Arial", 18);
+    pLabel->setPosition(ccp(playerBoxPos[3].x,  playerBoxPos[3].y + 60));
+    pLabel->setColor(ccBLUE);
+    this->addChild(pLabel, 1, 503);
+
+    pLabel = CCLabelTTF::create(" ", "Arial", 18);
+    pLabel->setPosition(ccp(playerBoxPos[4].x,  playerBoxPos[4].y + 60));
+    pLabel->setColor(ccBLUE);
+    this->addChild(pLabel, 1, 504);
+
+
 	{ // players hand card
 		static const int SMALL_CARD_WIDTH = 14;
 		for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
@@ -175,7 +209,7 @@ bool PlayerLayer::init()
 			for (int j = 0; j < MAX_HANDCARD_COUNT; j++)
 			{
 				CCSprite* cardImg = CCSprite::create();
-				cardImg->setPosition(ccp(playerPosX[i] + j * SMALL_CARD_WIDTH - 40, playerPosY[i] - 20));
+				cardImg->setPosition(ccp(playerBoxPos[i].x + j * SMALL_CARD_WIDTH - 40, playerBoxPos[i].y - 20));
 				cardImg->setVisible(false);
 				addChild(cardImg, 1, GetCardSpriteTag(i, j));
 			}
@@ -189,7 +223,7 @@ bool PlayerLayer::init()
 			for (int j = 0; j < 2; j++) 
 			{
 				pLabel = CCLabelTTF::create(" ", "Arial", 18);
-				pLabel->setPosition(ccp(playerPosX[i], playerPosY[i] - 40 - (j * JOKBO_DISPALY_HEIGHT)));
+				pLabel->setPosition(ccp(playerBoxPos[i].x, playerBoxPos[i].y - 40 - (j * JOKBO_DISPALY_HEIGHT)));
 				pLabel->setColor(ccYELLOW);
 				this->addChild(pLabel, 2, GetJokboLabelTag(i, j));
 			}
@@ -197,12 +231,12 @@ bool PlayerLayer::init()
 	}
 	{ // turn, sun
         CCSprite* turnImg = CCSprite::create(s_pPathPBoxTurn);
-        turnImg->setPosition(ccp(playerPosX[0], playerPosY[0]));
+        turnImg->setPosition(playerBoxPos[0]);
         turnImg->setVisible(false);
         addChild(turnImg, 1, 301);
 
         CCSprite* sunImg = CCSprite::create(s_pPathSun);
-		sunImg->setPosition(ccp(playerPosX[0], playerPosY[0]));
+		sunImg->setPosition(playerBoxPos[0]);
 		sunImg->setVisible(false);
 		addChild(sunImg, 1, 300);
 
@@ -245,7 +279,11 @@ bool PlayerLayer::init()
         btn6->setPosition(ccp(BTN_WIDTH * 1, BTN_HEIGHT * 0)); btn6->setAnchorPoint(ccp(0, 0));
 
         addChild(menu, 3, 400);
-        menu->setPosition(ccp(rightXPos - 75, bottomYPos - 50));
+
+        CCPoint menuPos;
+        menuPos.x = playerBoxPos[0].x - 50;
+        menuPos.y = playerBoxPos[2].y - 50;
+        menu->setPosition(menuPos);
 
     }
 
@@ -320,7 +358,7 @@ void PlayerLayer::update(float delta)
         playerChanged |= changed;
 		if (changed)
 		{
-			DisplayPlayer(i, playerInfos[i]);
+            DisplayPlayer(i, playerInfos[i]);
 		}
 	}
 
@@ -377,6 +415,7 @@ void PlayerLayer::update(float delta)
         {
             ShowBetBtns(false);
             ShowTurnSun(false);
+            ClearBetString();
         }
 	}
 
@@ -430,6 +469,33 @@ void PlayerLayer::update(float delta)
         }
     }
 
+    {// on enter turn 을 어떻게 알아낼 것인가?
+        if (m_kPokerSequence == POKERSEQUENCE_BET1 || m_kPokerSequence == POKERSEQUENCE_BET2 ||
+            m_kPokerSequence == POKERSEQUENCE_BET3 || m_kPokerSequence == POKERSEQUENCE_BET4)
+        {
+            int betIndex = 0;
+            if (m_kPokerSequence == POKERSEQUENCE_BET1)
+                betIndex = 1;
+            if (m_kPokerSequence == POKERSEQUENCE_BET2)
+                betIndex = 2;
+            if (m_kPokerSequence == POKERSEQUENCE_BET3)
+                betIndex = 3;
+            if (m_kPokerSequence == POKERSEQUENCE_BET4)
+                betIndex = 4;
+
+            for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+            {
+                bool changed = m_kPlayerInfos[i].Changed(playerInfos[i]);
+                playerChanged |= changed;
+                if (changed)
+                {
+                    DisplayBetting(i, betIndex, playerInfos[i]);
+                }
+            }
+        }
+    }
+
+
     if (playerChanged)
     {
         for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
@@ -482,11 +548,6 @@ void PlayerLayer::ShowTurnSun(bool show)
 
 void PlayerLayer::ReadyBtns(int betting)
 {
-    if (betting > 0)
-    {
-        int aa = 0;
-        aa++;
-    }
     int menuTag = 400;
     CCMenu* menu = (CCMenu*)getChildByTag(menuTag);
     if (menu)
@@ -536,12 +597,29 @@ void PlayerLayer::DisplayPlayer(int index, const PokerPlayerInfo& playerInfo)
 
 	char pszPlayerInfo[256];
 	sprintf(pszPlayerInfo, "player %d \n %s ", index, pszInfo);
-	CCLabelTTF *label = (CCLabelTTF *)getChildByTag(index);
+	CCLabelTTF* label = (CCLabelTTF*)getChildByTag(index);
 	label->setString(pszPlayerInfo);
 
 	DisplayPlayerHandCards(index, playerInfo);
 }
 
+void PlayerLayer::DisplayBetting(int index, int betIndex, const PokerPlayerInfo& playerInfo)
+{
+    char pszInfo[256];
+    playerInfo.GetBetString(pszInfo, betIndex);
+
+    CCLabelTTF* betLabel = (CCLabelTTF*)getChildByTag(500 + index);
+    betLabel->setString(pszInfo);
+}
+
+void PlayerLayer::ClearBetString()
+{
+    for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+    {
+        CCLabelTTF* betLabel = (CCLabelTTF*)getChildByTag(500 + i);
+        betLabel->setString("");
+    }
+}
 int PlayerLayer::GetCardSpriteTag(int playerIndex, int cardIndex) const
 {
 	int index = 100 + playerIndex * 10 + cardIndex;

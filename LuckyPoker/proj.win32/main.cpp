@@ -18,5 +18,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     eglView->setViewName("LuckyPoker");
     //eglView->setFrameSize(480, 320);
     eglView->setFrameSize(320, 480);
+    //eglView->setFrameSize(768, 1024);
     return CCApplication::sharedApplication()->run();
 }

@@ -166,6 +166,7 @@ int Dealer::GetLastWinnerIndex()
 void Dealer::ResetRaiseCount()
 {
     m_kTableInfo.raiseCount = 0;
+    m_kTableInfo.callMoney = 0;
 }
 
 void Dealer::CalcMoney(int betIndex)

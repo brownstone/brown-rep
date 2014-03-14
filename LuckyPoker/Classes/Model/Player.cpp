@@ -194,7 +194,7 @@ void Player::ExactCalc(int betIndex)
 		m_kPokerPlayerInfo.nTempBet1Money = 0;
 	} else if (betIndex == 2) {
 		m_kPokerPlayerInfo.nTotalMoney -= m_kPokerPlayerInfo.nTempBet2Money;
-		m_kPokerPlayerInfo.nLastBet2Money += m_kPokerPlayerInfo.nTempBet1Money;
+		m_kPokerPlayerInfo.nLastBet2Money += m_kPokerPlayerInfo.nTempBet2Money;
 		m_kPokerPlayerInfo.nTempBet2Money = 0;
 	} else if (betIndex == 3) {
 		m_kPokerPlayerInfo.nTotalMoney -= m_kPokerPlayerInfo.nTempBet3Money;
@@ -455,36 +455,6 @@ bool Player::DoBetting(int betIndex, Betting betting)
             else 
                 *bettingRef = betting;
 
-            //if (betIndex == 1) 
-            //{
-            //    if (betting == BETTING_NONE)
-            //        m_kPokerPlayerInfo.eBet1 = GetBetting(m_kPokerPlayerInfo.eBet1);
-            //    else 
-            //        m_kPokerPlayerInfo.eBet1 = betting;
-
-            //}
-            //else if (betIndex == 2)
-            //{
-            //    if (betting == BETTING_NONE)
-            //        m_kPokerPlayerInfo.eBet2 = GetBetting(m_kPokerPlayerInfo.eBet2);
-            //    else 
-            //        m_kPokerPlayerInfo.eBet2 = betting;
-            //}
-            //else if (betIndex == 3)
-            //{
-            //    if (betting == BETTING_NONE)
-            //        m_kPokerPlayerInfo.eBet3 = GetBetting(m_kPokerPlayerInfo.eBet3);
-            //    else 
-            //        m_kPokerPlayerInfo.eBet3 = betting;
-            //}
-            //else if (betIndex == 4)
-            //{
-            //    if (betting == BETTING_NONE)
-            //        m_kPokerPlayerInfo.eBet4 = GetBetting(m_kPokerPlayerInfo.eBet4);
-            //    else 
-            //        m_kPokerPlayerInfo.eBet4 = betting;
-            //}
-
             bTurnOver = true;
             break;
         }
@@ -492,14 +462,6 @@ bool Player::DoBetting(int betIndex, Betting betting)
     case PLAYERSTATE_DISCONNECTER:
         {
             *bettingRef = GetBetting(*bettingRef);
-            //if (betIndex == 1) 
-            //    m_kPokerPlayerInfo.eBet1 = GetBetting(m_kPokerPlayerInfo.eBet1);
-            //else if (betIndex == 2)
-            //    m_kPokerPlayerInfo.eBet2 = GetBetting(m_kPokerPlayerInfo.eBet2);
-            //else if (betIndex == 3)
-            //    m_kPokerPlayerInfo.eBet3 = GetBetting(m_kPokerPlayerInfo.eBet3);
-            //else if (betIndex == 4)
-            //    m_kPokerPlayerInfo.eBet4 = GetBetting(m_kPokerPlayerInfo.eBet4);
             bTurnOver = true;
             break;
         }
@@ -696,97 +658,6 @@ void Player::Remove()
 void Player::GetStringInfo(char szInformation[]) const
 {
 	szInformation[0] = 0;
-
-	//sprintf_s(szInformation, 256, "%d", m_kPokerPlayerInfo.uiTotalMoney);
-	//strcat_s(szInformation, 256, "\n");
-
-	//char szCard[128];
-	//strcat_s(szInformation, 256, GetJokboStringInfo(m_kJokboResult.eJokbo, szCard));
-	//strcat_s(szInformation, 256, " : ");
-	//strcat_s(szInformation, 256, GetCardStringInfo(m_kJokboResult.kTopCard, szCard));
-
-
-	//strcat_s(szInformation, 256, "\n");
-
-	//for (unsigned int ui = 0; ui < MAX_OPENCARD_COUNT; ui++)
-	//{
-	//	strcat_s(szInformation, 256, GetCardStringInfo(m_kPokerPlayerInfo.akOpenCard[ui], szCard));
-	//}
-	//strcat_s(szInformation, 256, "\n");
-
-	//for (unsigned int ui = 0; ui < MAX_HIDDENCARD_COUNT; ui++)
-	//{
-	//	strcat_s(szInformation, 256, GetCardStringInfo(m_kPokerPlayerInfo.akHiddenCard[ui], szCard));
-	//}
-	//strcat_s(szInformation, 256, "\n");
-
-	//switch (m_kPokerPlayerInfo.eBet1)
-	//{
-	//case BETTING_NONE:	strcat_s(szInformation, 256, "B1_NO");	break;
-	//case BETTING_CHECK:	strcat_s(szInformation, 256, "B1_CH");	break;
-	//case BETTING_BBING:	strcat_s(szInformation, 256, "B1_BB");	break;
-	//case BETTING_CALL:	strcat_s(szInformation, 256, "B1_CA");	break;
-	//case BETTING_QUARTER:	strcat_s(szInformation, 256, "B1_QU");	break;
-	//case BETTING_HALF:	strcat_s(szInformation, 256, "B1_HA");	break;
-	//case BETTING_FULL:	strcat_s(szInformation, 256, "B1_FU");	break;
-	//case BETTING_DOUBLE:	strcat_s(szInformation, 256, "B1_DO");	break;
-	//case BETTING_ALLIN:	strcat_s(szInformation, 256, "B1_AL");	break;
-	//case BETTING_DIE:	strcat_s(szInformation, 256, "B1_DI");	break;
-	//}
-	//sprintf_s(szCard, 128, "  %d", m_kPokerPlayerInfo.uiBet1Money);
-	//strcat_s(szInformation, 256, szCard);
-	//strcat_s(szInformation, 256, "\n");
-
-	//switch (m_kPokerPlayerInfo.eBet2)
-	//{
-	//case BETTING_NONE:	strcat_s(szInformation, 256, "B2_NO");	break;
-	//case BETTING_CHECK:	strcat_s(szInformation, 256, "B2_CH");	break;
-	//case BETTING_BBING:	strcat_s(szInformation, 256, "B2_BB");	break;
-	//case BETTING_CALL:	strcat_s(szInformation, 256, "B2_CA");	break;
-	//case BETTING_QUARTER:	strcat_s(szInformation, 256, "B2_QU");	break;
-	//case BETTING_HALF:	strcat_s(szInformation, 256, "B2_HA");	break;
-	//case BETTING_FULL:	strcat_s(szInformation, 256, "B2_FU");	break;
-	//case BETTING_DOUBLE:	strcat_s(szInformation, 256, "B2_DO");	break;
-	//case BETTING_ALLIN:	strcat_s(szInformation, 256, "B2_AL");	break;
-	//case BETTING_DIE:	strcat_s(szInformation, 256, "B2_DI");	break;
-	//}
-	//sprintf_s(szCard, 128, "  %d", m_kPokerPlayerInfo.uiBet2Money);
-	//strcat_s(szInformation, 256, szCard);
-	//strcat_s(szInformation, 256, "\n");
-
-	//switch (m_kPokerPlayerInfo.eBet3)
-	//{
-	//case BETTING_NONE:	strcat_s(szInformation, 256, "B3_NO");	break;
-	//case BETTING_CHECK:	strcat_s(szInformation, 256, "B3_CH");	break;
-	//case BETTING_BBING:	strcat_s(szInformation, 256, "B3_BB");	break;
-	//case BETTING_CALL:	strcat_s(szInformation, 256, "B3_CA");	break;
-	//case BETTING_QUARTER:	strcat_s(szInformation, 256, "B3_QU");	break;
-	//case BETTING_HALF:	strcat_s(szInformation, 256, "B3_HA");	break;
-	//case BETTING_FULL:	strcat_s(szInformation, 256, "B3_FU");	break;
-	//case BETTING_DOUBLE:	strcat_s(szInformation, 256, "B3_DO");	break;
-	//case BETTING_ALLIN:	strcat_s(szInformation, 256, "B3_AL");	break;
-	//case BETTING_DIE:	strcat_s(szInformation, 256, "B3_DI");	break;
-	//}
-	//sprintf_s(szCard, 128, "  %d", m_kPokerPlayerInfo.uiBet3Money);
-	//strcat_s(szInformation, 256, szCard);
-	//strcat_s(szInformation, 256, "\n");
-
-	//switch (m_kPokerPlayerInfo.eBet4)
-	//{
-	//case BETTING_NONE:	strcat_s(szInformation, 256, "B4_NO");	break;
-	//case BETTING_CHECK:	strcat_s(szInformation, 256, "B4_CH");	break;
-	//case BETTING_BBING:	strcat_s(szInformation, 256, "B4_BB");	break;
-	//case BETTING_CALL:	strcat_s(szInformation, 256, "B4_CA");	break;
-	//case BETTING_QUARTER:	strcat_s(szInformation, 256, "B4_QU");	break;
-	//case BETTING_HALF:	strcat_s(szInformation, 256, "B4_HA");	break;
-	//case BETTING_FULL:	strcat_s(szInformation, 256, "B4_FU");	break;
-	//case BETTING_DOUBLE:	strcat_s(szInformation, 256, "B4_DO");	break;
-	//case BETTING_ALLIN:	strcat_s(szInformation, 256, "B4_AL");	break;
-	//case BETTING_DIE:	strcat_s(szInformation, 256, "B4_DI");	break;
-	//}
-	//sprintf_s(szCard, 128, "  %d", m_kPokerPlayerInfo.uiBet4Money);
-	//strcat_s(szInformation, 256, szCard);
-	//strcat_s(szInformation, 256, "\n");
 
 }
 

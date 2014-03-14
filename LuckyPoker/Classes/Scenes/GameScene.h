@@ -35,7 +35,8 @@ public:
 	CREATE_FUNC(PlayerLayer);
 
 private:
-	void DisplayPlayer(int index, const PokerPlayerInfo& playerInfo);
+    void DisplayPlayer(int index, const PokerPlayerInfo& playerInfo);
+    void DisplayBetting(int index, int betIndex, const PokerPlayerInfo& playerInfo);
 	void DisplayPlayerHandCards(int index, const PokerPlayerInfo& playerInfo);
 	void DisplayPlayerJokbo(int index, const JokboResult& playerInfo);
 	void DisplayDealer(const TableInfo& tableInfo);
@@ -45,6 +46,7 @@ private:
     void ShowBetBtns(bool show);
     void ShowTurnSun(bool show);
     void ReadyBtns(int betting);
+    void ClearBetString();
 
 	int GetCardSpriteTag(int playerIndex, int cardIndex) const;
 	int GetJokboLabelTag(int playerIndex, int labelIndex) const;

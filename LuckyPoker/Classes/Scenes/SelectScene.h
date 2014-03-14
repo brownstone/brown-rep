@@ -10,6 +10,8 @@ public:
     virtual bool init();  
 	virtual void ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
 
+    void menuCallbackMenuBtns(CCObject* pSender);
+
     // implement the "static node()" method manually
     CREATE_FUNC(SelectLayer);
 
@@ -17,6 +19,8 @@ protected:
 	bool _hasBeenSkiped;
 
 	void startGamePlay();
+
+    void Quit();
 
 };
 

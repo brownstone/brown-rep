@@ -19,5 +19,15 @@ static const char s_pPathPBoxDefault[]= "Images/player_box_default.png";
 static const char s_pPathPBoxTurn[]   = "Images/player_box_turn.png";
 static const char s_pPathSun[]        = "Images/sun.png";
 
+static const char s_pPathPoStartOn[]  = "Images/btn/poker_start_default.png";
+static const char s_pPathPoStartSel[] = "Images/btn/poker_start_select.png";
+static const char s_pPathPoStartOff[] = "Images/btn/poker_start_disable.png";
+
+static const char s_pPathHoStartOn[]  = "Images/btn/holdem_start_default.png";
+static const char s_pPathHoStartSel[] = "Images/btn/holdem_start_select.png";
+static const char s_pPathHoStartOff[] = "Images/btn/holdem_start_disable.png";
+
+static const char s_pPathQuitOn[]     = "Images/btn/quit_default.png";
+static const char s_pPathQuitSel[]    = "Images/btn/quit_select.png";
 
 #endif
