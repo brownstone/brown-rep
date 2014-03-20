@@ -40,6 +40,7 @@ public:
     bool IsThinking();
     void StopThinking();
     bool DoBetting(int betIndex, Betting betting);
+    bool IsBettingDone();
     
     bool IsDie() const;
 	bool IsSchoolMoneyDone() const;
@@ -66,7 +67,7 @@ public:
     unsigned int GetLastBetMoney(int betIndex);
 	void ExactCalc(int betIndex);
 	void ExactCalcSchoolMoney();
-    Betting GetBetting(Betting ePriviousBetting) const;
+    Betting GetBetting(Betting ePriviousBetting, int betIndex) const;
 
     void GetStringInfo(char szInformation[]) const;
     //char* GetCardStringInfo(const Card& kCard, char szCard[]) const
@@ -76,6 +77,8 @@ public:
 
     void SetComputer();
     void Remove();
+
+    int GetMoney() const;
 
 private:
     int GetPrepareBetting(int betIndex);

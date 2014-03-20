@@ -18,6 +18,8 @@ public:
 	// implement the "static node()" method manually
 	CREATE_FUNC(GameBGLayer);
 
+    // a selector callback
+    void menuBackCallback(CCObject* pSender);
 };
 
 class PlayerLayer : public CCLayer
@@ -48,10 +50,33 @@ private:
     void ReadyBtns(int betting);
     void ClearBetString();
 
-	int GetCardSpriteTag(int playerIndex, int cardIndex) const;
-	int GetJokboLabelTag(int playerIndex, int labelIndex) const;
 
     CCPoint GetPlayerPos(int playerIndex) const;
+    CCPoint GetPlayerNamePos(int playerIndex) const;
+    CCPoint GetPlayerMoneyPos(int playerIndex) const;
+    CCPoint GetSequencePos() const;
+    CCPoint GetTableMoneyPos() const;
+    CCPoint GetCallMoneyPos() const;
+    CCPoint GetMyTableMoneyPos() const;
+    CCPoint GetBettingInfoPos(int playerIndex) const;
+    CCPoint GetCardSpritePos(int playerIndex, int cardIndex) const;
+    CCPoint GetJokboLabelPos(int playerIndex) const;
+    CCPoint GetTurnBoxPos(int playerIndex) const;
+    CCPoint GetSunPos(int playerIndex) const;
+
+    int GetPlayerNameTag(int playerIndex) const;
+    int GetPlayerMoneyTag(int playerIndex) const;
+    int GetSequenceTag() const;
+    int GetTableMoneyTag() const;
+    int GetCallMoneyTag() const;
+    int GetMyTableMoneyTag() const;
+    int GetBettingInfoTag(int playerIndex) const;
+
+    int GetCardSpriteTag(int playerIndex, int cardIndex) const;
+    int GetJokboLabelTag(int playerIndex, int labelIndex) const;
+
+    int GetTurnBoxTag() const;
+    int GetSunTag() const;
 
 private:
 	MainLogic* m_pMainLogic;

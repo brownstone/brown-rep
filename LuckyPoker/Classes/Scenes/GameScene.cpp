@@ -2,6 +2,7 @@
 #include "Assist/InstanceMan.h"
 #include "Model/MainLogic.h"
 #include "../ResourceString.h"
+#include "scenes/SelectScene.h"
 
 bool GameBGLayer::init()
 {
@@ -12,51 +13,37 @@ bool GameBGLayer::init()
         return false;
     }
 
+    //CCLayerColor* background = CCLayerColor::create(ccc4(155, 155, 155, 255));
+    //addChild(background);
+
+
+
     CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
+
+    CCSprite* pSprite = CCSprite::create("Images/bg.png");
+    pSprite->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
+    this->addChild(pSprite, 0);
+
 
     /////////////////////////////
     // 2. add a menu item with "X" image, which is clicked to quit the program
     //    you may modify it.
 
+    CCMenuItemFont *item_1 = CCMenuItemFont::create("Menu", this, menu_selector(GameBGLayer::menuBackCallback));
+    item_1->setPosition(ccp(origin.x + visibleSize.width - item_1->getContentSize().width/2 - 100 ,
+        origin.y + item_1->getContentSize().height/2));
+
     // add a "close" icon to exit the progress. it's an autorelease object
     CCMenuItemImage *pCloseItem = CCMenuItemImage::create(
-        "CloseNormal.png",
-        "CloseSelected.png",
-        this,
-        menu_selector(GameScene::menuCloseCallback));
-
+        "CloseNormal.png", "CloseSelected.png", this, menu_selector(GameScene::menuCloseCallback));
     pCloseItem->setPosition(ccp(origin.x + visibleSize.width - pCloseItem->getContentSize().width/2 ,
         origin.y + pCloseItem->getContentSize().height/2));
 
     // create menu, it's an autorelease object
-    CCMenu* pMenu = CCMenu::create(pCloseItem, NULL);
+    CCMenu* pMenu = CCMenu::create(item_1, pCloseItem, NULL);
     pMenu->setPosition(CCPointZero);
     this->addChild(pMenu, 1);
-
-    /////////////////////////////
-    // 3. add your codes below...
-
-    // add a label shows "Hello World"
-    // create and initialize a label
-
-    CCLabelTTF* pLabel = CCLabelTTF::create("Game BG Layer", "Arial", 24);
-
-    // position the label on the center of the screen
-    pLabel->setPosition(ccp(origin.x + visibleSize.width/2,
-        origin.y + visibleSize.height - pLabel->getContentSize().height));
-
-    // add the label as a child to this layer
-    this->addChild(pLabel, 1);
-
-    //// add "IntroScene" splash screen"
-    //CCSprite* pSprite = CCSprite::create("IntroScene.png");
-
-    //// position the sprite on the center of the screen
-    //pSprite->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-
-    //// add the sprite as a child to this layer
-    //this->addChild(pSprite, 0);
 
 
     return true;
@@ -65,6 +52,19 @@ bool GameBGLayer::init()
 void GameBGLayer::update(float delta)
 {
 	CCLayer::update(delta);
+}
+
+void GameBGLayer::menuBackCallback(CCObject* pSender)
+{
+    CCLOG("Intro complete, begin SelectScene");
+    //MainLogic* mainLogic = InstanceMan::mainLogic->GetInstance();
+    //if (mainLogic)
+    //{
+    //    mainLogic->Init()
+    //}
+
+    CCScene* pScene = SelectScene::scene();
+    CCDirector::sharedDirector()->replaceScene(pScene);
 }
 
 
@@ -107,6 +107,193 @@ CCPoint PlayerLayer::GetPlayerPos(int playerIndex) const
     return CCPoint(playerPosX[playerIndex], playerPosY[playerIndex]);
 }
 
+
+CCPoint PlayerLayer::GetPlayerNamePos(int playerIndex) const
+{
+    if (playerIndex >= MAX_POKERPLAYER_COUNT) {
+        return CCPoint(0,0);
+    }
+
+    int playerPosX[5];
+    int playerPosY[5];
+    playerPosX[0] = 1160;	playerPosY[0] = 480;
+    playerPosX[1] = 1160;	playerPosY[1] = 312;
+    playerPosX[2] = 360;	playerPosY[2] = 59;
+    playerPosX[3] = 150;	playerPosY[3] = 312;
+    playerPosX[4] = 150;	playerPosY[4] = 480;
+
+    return CCPoint(playerPosX[playerIndex], playerPosY[playerIndex]);
+
+}
+
+CCPoint PlayerLayer::GetPlayerMoneyPos(int playerIndex) const
+{
+    if (playerIndex >= MAX_POKERPLAYER_COUNT) {
+        return CCPoint(0,0);
+    }
+
+    int playerPosX[5];
+    int playerPosY[5];
+    playerPosX[0] = 980;	playerPosY[0] = 480;
+    playerPosX[1] = 980;	playerPosY[1] = 312;
+    playerPosX[2] = 620;	playerPosY[2] = 59;
+    playerPosX[3] = 340;	playerPosY[3] = 312;
+    playerPosX[4] = 340;	playerPosY[4] = 480;
+
+    return CCPoint(playerPosX[playerIndex], playerPosY[playerIndex]);
+}
+
+CCPoint PlayerLayer::GetSequencePos() const
+{
+    return CCPoint(640, 680);
+}
+
+CCPoint PlayerLayer::GetTableMoneyPos() const
+{
+    return CCPoint(700, 456);
+}
+
+CCPoint PlayerLayer::GetCallMoneyPos() const
+{
+    return CCPoint(700, 420);
+}
+
+CCPoint PlayerLayer::GetMyTableMoneyPos() const
+{
+    return CCPoint(700, 388);
+}
+
+CCPoint PlayerLayer::GetBettingInfoPos(int playerIndex) const
+{
+    if (playerIndex >= MAX_POKERPLAYER_COUNT) {
+        return CCPoint(0,0);
+    }
+
+    int playerPosX[5];
+    int playerPosY[5];
+    playerPosX[0] = 800;	playerPosY[0] = 550;
+    playerPosX[1] = 800;	playerPosY[1] = 350;
+    playerPosX[2] = 550;	playerPosY[2] = 280;
+    playerPosX[3] = 500;	playerPosY[3] = 350;
+    playerPosX[4] = 500;	playerPosY[4] = 550;
+
+    return CCPoint(playerPosX[playerIndex], playerPosY[playerIndex]);
+}
+
+CCPoint PlayerLayer::GetCardSpritePos(int playerIndex, int cardIndex) const
+{
+    if (playerIndex >= MAX_POKERPLAYER_COUNT) {
+        return CCPoint(0,0);
+    }
+    if (cardIndex >= MAX_HANDCARD_COUNT) {
+        return CCPoint(0,0);
+    }
+
+    int xoffset = cardIndex * 20;
+
+    int playerPosX[5];
+    int playerPosY[5];
+    playerPosX[0] = 860 + xoffset;	playerPosY[0] = 560;
+    playerPosX[1] = 860 + xoffset;	playerPosY[1] = 390;
+    playerPosX[2] = 520 + xoffset;	playerPosY[2] = 150;
+    playerPosX[3] = 260 + xoffset;	playerPosY[3] = 390;
+    playerPosX[4] = 260 + xoffset;	playerPosY[4] = 560;
+
+    return CCPoint(playerPosX[playerIndex], playerPosY[playerIndex]);
+}
+
+
+CCPoint PlayerLayer::GetJokboLabelPos(int playerIndex) const
+{
+    CCPoint pos = GetCardSpritePos(playerIndex, 3);
+    pos.y -= 40;
+
+    return pos;
+}
+
+CCPoint PlayerLayer::GetTurnBoxPos(int playerIndex) const
+{
+    if (playerIndex >= MAX_POKERPLAYER_COUNT) {
+        return CCPoint(0,0);
+    }
+
+    CCPoint pos = GetPlayerNamePos(playerIndex);
+    pos.y += 60;
+
+    return pos;
+}
+
+CCPoint PlayerLayer::GetSunPos(int playerIndex) const
+{
+    if (playerIndex >= MAX_POKERPLAYER_COUNT) {
+        return CCPoint(0,0);
+    }
+
+    CCPoint pos = GetCardSpritePos(playerIndex, 0);
+    pos.y += 60;
+
+    return pos;
+}
+
+int PlayerLayer::GetPlayerNameTag(int playerIndex) const
+{
+    return playerIndex + 0;
+}
+
+int PlayerLayer::GetPlayerMoneyTag(int playerIndex) const
+{
+    return playerIndex + 10;
+}
+
+int PlayerLayer::GetSequenceTag() const
+{
+    return 20;
+}
+
+int PlayerLayer::GetTableMoneyTag() const
+{
+    return 30;
+}
+
+int PlayerLayer::GetCallMoneyTag() const
+{
+    return 40;
+}
+
+int PlayerLayer::GetMyTableMoneyTag() const
+{
+    return 50;
+}
+
+int PlayerLayer::GetBettingInfoTag(int playerIndex) const
+{
+    return playerIndex + 70;
+}
+
+int PlayerLayer::GetCardSpriteTag(int playerIndex, int cardIndex) const
+{
+    int index = 100 + playerIndex * 10 + cardIndex;
+    return index;
+}
+
+int PlayerLayer::GetJokboLabelTag(int playerIndex, int labelIndex) const
+{
+    int index = 200 + playerIndex * 10 + labelIndex;
+    return index;
+}
+
+int PlayerLayer::GetTurnBoxTag() const
+{
+    return 300;
+
+}
+int PlayerLayer::GetSunTag() const
+{
+    return 310;
+
+}
+
+
 bool PlayerLayer::init()
 {
 	//////////////////////////////
@@ -115,91 +302,57 @@ bool PlayerLayer::init()
 	{
 		return false;
 	}
-	CCLayerColor* background = CCLayerColor::create(ccc4(155, 155, 155, 255));
-	addChild(background);
 
 	CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
 	CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
 
-	/////////////////////////////
-	// 2. add a menu item with "X" image, which is clicked to quit the program
-	//    you may modify it.
 
-    static int midXPos = visibleSize.width / 2;
-    static int rightXPos = visibleSize.width - 100 - 20;
-    static int topYPos    = 3 * visibleSize.height / 3 - 60;
-    static int midYPos    = 2 * visibleSize.height / 3 - 60;
-    static int bottomYPos = 1 * visibleSize.height / 3 - 40;
-
-
+    CCLabelTTF* pLabel;
+    // names
     for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
     {
-        CCSprite* pbox = CCSprite::create(s_pPathPBoxDefault);
-        pbox->setPosition(GetPlayerPos(i));
-        addChild(pbox, 1);
+	    pLabel = CCLabelTTF::create("Player name", "Arial", 20);
+	    pLabel->setPosition(GetPlayerNamePos(i));
+	    this->addChild(pLabel, 1, GetPlayerNameTag(i));
+    }
+
+    // moneys     right align
+    for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+    {
+        pLabel = CCLabelTTF::create("", "Arial", 20);
+        pLabel->setPosition(GetPlayerMoneyPos(i));
+        this->addChild(pLabel, 1, GetPlayerMoneyTag(i));
     }
 
 
-    CCPoint playerBoxPos[MAX_POKERPLAYER_COUNT];
+    // seq
+    pLabel = CCLabelTTF::create("cequence", "Arial", 20);
+    pLabel->setPosition(GetSequencePos());
+    this->addChild(pLabel, 1, GetSequenceTag());
+
+    // Table money
+    pLabel = CCLabelTTF::create("", "Arial", 20);
+    pLabel->setPosition(GetTableMoneyPos());
+    this->addChild(pLabel, 1, GetTableMoneyTag());
+    // call money
+    pLabel = CCLabelTTF::create("", "Arial", 20);
+    pLabel->setPosition(GetCallMoneyPos());
+    this->addChild(pLabel, 1, GetCallMoneyTag());
+    // My table money
+    pLabel = CCLabelTTF::create("", "Arial", 20);
+    pLabel->setPosition(GetMyTableMoneyPos());
+    this->addChild(pLabel, 1, GetMyTableMoneyTag());
+
+
+    // Betting info
     for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
     {
-        playerBoxPos[i] = GetPlayerPos(i);
+        pLabel = CCLabelTTF::create(" ", "Arial", 18);
+        pLabel->setPosition(GetBettingInfoPos(i));
+        pLabel->setColor(ccBLUE);
+        this->addChild(pLabel, 1, GetBettingInfoTag(i));
     }
 
-
-	CCLabelTTF* pLabel = CCLabelTTF::create("Player 1", "Arial", 20);
-	pLabel->setPosition(ccp(playerBoxPos[0].x,  playerBoxPos[0].y + 20));
-	this->addChild(pLabel, 1, 0);
-
-	pLabel = CCLabelTTF::create("Player 2", "Arial", 20);
-	pLabel->setPosition(ccp(playerBoxPos[1].x,  playerBoxPos[1].y + 20));
-	this->addChild(pLabel, 1, 1);
-
-	pLabel = CCLabelTTF::create("Player 3", "Arial", 20);
-	pLabel->setPosition(ccp(playerBoxPos[2].x,  playerBoxPos[2].y + 20));
-	this->addChild(pLabel, 1, 2);
-
-	pLabel = CCLabelTTF::create("Player 4", "Arial", 20);
-	pLabel->setPosition(ccp(playerBoxPos[3].x,  playerBoxPos[3].y + 20));
-	this->addChild(pLabel, 1, 3);
-
-	pLabel = CCLabelTTF::create("Player 5", "Arial", 20);
-	pLabel->setPosition(ccp(playerBoxPos[4].x,  playerBoxPos[4].y + 20));
-	this->addChild(pLabel, 1, 4);
-
-	pLabel = CCLabelTTF::create("Dealer", "Arial", 20);
-	pLabel->setPosition(ccp(origin.x + midXPos, origin.y + topYPos - 50));
-	this->addChild(pLabel, 1, 10);
-
-	pLabel = CCLabelTTF::create("Sequence", "Arial", 20);
-	pLabel->setPosition(ccp(origin.x + midXPos, origin.y + topYPos + 30));
-	this->addChild(pLabel, 1, 20);
-
-
-    pLabel = CCLabelTTF::create(" ", "Arial", 18);
-    pLabel->setPosition(ccp(playerBoxPos[0].x,  playerBoxPos[0].y + 60));
-    pLabel->setColor(ccBLUE);
-    this->addChild(pLabel, 1, 500);
-
-    pLabel = CCLabelTTF::create(" ", "Arial", 18);
-    pLabel->setPosition(ccp(playerBoxPos[1].x,  playerBoxPos[1].y + 60));
-    pLabel->setColor(ccBLUE);
-    this->addChild(pLabel, 1, 501);
-
-    pLabel = CCLabelTTF::create(" ", "Arial", 18);
-    pLabel->setPosition(ccp(playerBoxPos[2].x,  playerBoxPos[2].y + 60));
-    pLabel->setColor(ccBLUE);
-    this->addChild(pLabel, 1, 502);
-
-    pLabel = CCLabelTTF::create(" ", "Arial", 18);
-    pLabel->setPosition(ccp(playerBoxPos[3].x,  playerBoxPos[3].y + 60));
-    pLabel->setColor(ccBLUE);
-    this->addChild(pLabel, 1, 503);
-
-    pLabel = CCLabelTTF::create(" ", "Arial", 18);
-    pLabel->setPosition(ccp(playerBoxPos[4].x,  playerBoxPos[4].y + 60));
-    pLabel->setColor(ccBLUE);
-    this->addChild(pLabel, 1, 504);
 
 
 	{ // players hand card
@@ -209,7 +362,7 @@ bool PlayerLayer::init()
 			for (int j = 0; j < MAX_HANDCARD_COUNT; j++)
 			{
 				CCSprite* cardImg = CCSprite::create();
-				cardImg->setPosition(ccp(playerBoxPos[i].x + j * SMALL_CARD_WIDTH - 40, playerBoxPos[i].y - 20));
+				cardImg->setPosition(GetCardSpritePos(i, j));
 				cardImg->setVisible(false);
 				addChild(cardImg, 1, GetCardSpriteTag(i, j));
 			}
@@ -217,28 +370,24 @@ bool PlayerLayer::init()
 	}
 
 	{ // jokbo
-		static const int JOKBO_DISPALY_HEIGHT = 16;
 		for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
 		{
-			for (int j = 0; j < 2; j++) 
-			{
-				pLabel = CCLabelTTF::create(" ", "Arial", 18);
-				pLabel->setPosition(ccp(playerBoxPos[i].x, playerBoxPos[i].y - 40 - (j * JOKBO_DISPALY_HEIGHT)));
-				pLabel->setColor(ccYELLOW);
-				this->addChild(pLabel, 2, GetJokboLabelTag(i, j));
-			}
+			pLabel = CCLabelTTF::create(" ", "Arial", 18);
+			pLabel->setPosition(GetJokboLabelPos(i));
+			pLabel->setColor(ccYELLOW);
+			this->addChild(pLabel, 2, GetJokboLabelTag(i, 0));
 		}
 	}
 	{ // turn, sun
         CCSprite* turnImg = CCSprite::create(s_pPathPBoxTurn);
-        turnImg->setPosition(playerBoxPos[0]);
+        turnImg->setPosition(GetTurnBoxPos(0));
         turnImg->setVisible(false);
-        addChild(turnImg, 1, 301);
+        addChild(turnImg, 1, GetTurnBoxTag());
 
         CCSprite* sunImg = CCSprite::create(s_pPathSun);
-		sunImg->setPosition(playerBoxPos[0]);
+		sunImg->setPosition(GetSunPos(0));
 		sunImg->setVisible(false);
-		addChild(sunImg, 1, 300);
+		addChild(sunImg, 1, GetSunTag());
 
 	}
 
@@ -281,8 +430,8 @@ bool PlayerLayer::init()
         addChild(menu, 3, 400);
 
         CCPoint menuPos;
-        menuPos.x = playerBoxPos[0].x - 50;
-        menuPos.y = playerBoxPos[2].y - 50;
+        menuPos.x = 900;
+        menuPos.y = 150;
         menu->setPosition(menuPos);
 
     }
@@ -537,11 +686,11 @@ void PlayerLayer::ShowBetBtns(bool show)
 
 void PlayerLayer::ShowTurnSun(bool show)
 {
-    CCSprite* trunImg = (CCSprite*)getChildByTag(300);
+    CCSprite* trunImg = (CCSprite*)getChildByTag(GetTurnBoxTag());
     if (trunImg)
         trunImg->setVisible(show);
 
-    CCSprite* sunImg = (CCSprite*)getChildByTag(301);
+    CCSprite* sunImg = (CCSprite*)getChildByTag(GetSunTag());
     if (sunImg)
         sunImg->setVisible(show);
 }
@@ -592,13 +741,17 @@ void PlayerLayer::ReadyBtns(int betting)
 
 void PlayerLayer::DisplayPlayer(int index, const PokerPlayerInfo& playerInfo)
 {
-	char pszInfo[256];
-	playerInfo.GetStringInfo(pszInfo);
+
 
 	char pszPlayerInfo[256];
-	sprintf(pszPlayerInfo, "player %d \n %s ", index, pszInfo);
-	CCLabelTTF* label = (CCLabelTTF*)getChildByTag(index);
+	sprintf(pszPlayerInfo, "player %d", index);
+    CCLabelTTF* label;
+    label = (CCLabelTTF*)getChildByTag(GetPlayerNameTag(index));
 	label->setString(pszPlayerInfo);
+
+    label = (CCLabelTTF*)getChildByTag(GetPlayerMoneyTag(index));
+    sprintf(pszPlayerInfo, "%d", playerInfo.nTotalMoney);
+    label->setString(pszPlayerInfo);
 
 	DisplayPlayerHandCards(index, playerInfo);
 }
@@ -608,7 +761,7 @@ void PlayerLayer::DisplayBetting(int index, int betIndex, const PokerPlayerInfo&
     char pszInfo[256];
     playerInfo.GetBetString(pszInfo, betIndex);
 
-    CCLabelTTF* betLabel = (CCLabelTTF*)getChildByTag(500 + index);
+    CCLabelTTF* betLabel = (CCLabelTTF*)getChildByTag(GetBettingInfoTag(index));
     betLabel->setString(pszInfo);
 }
 
@@ -616,20 +769,22 @@ void PlayerLayer::ClearBetString()
 {
     for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
     {
-        CCLabelTTF* betLabel = (CCLabelTTF*)getChildByTag(500 + i);
+        CCLabelTTF* betLabel = (CCLabelTTF*)getChildByTag(GetBettingInfoTag(i));
         betLabel->setString("");
     }
 }
-int PlayerLayer::GetCardSpriteTag(int playerIndex, int cardIndex) const
-{
-	int index = 100 + playerIndex * 10 + cardIndex;
-	return index;
-}
 
-int PlayerLayer::GetJokboLabelTag(int playerIndex, int labelIndex) const
+static const char* GetCardImgName(int num)
 {
-	int index = 200 + playerIndex * 10 + labelIndex;
-	return index;
+    static const char* cardImgName[] = {
+        "Images/cards/b1fv.png",
+        "Images/cards/c1.png", "Images/cards/c2.png", "Images/cards/c3.png", "Images/cards/c4.png", "Images/cards/c5.png", "Images/cards/c6.png", "Images/cards/c7.png", "Images/cards/c8.png", "Images/cards/c9.png", "Images/cards/c10.png", "Images/cards/cj.png", "Images/cards/cq.png", "Images/cards/ck.png",
+        "Images/cards/d1.png", "Images/cards/d2.png", "Images/cards/d3.png", "Images/cards/d4.png", "Images/cards/d5.png", "Images/cards/d6.png", "Images/cards/d7.png", "Images/cards/d8.png", "Images/cards/d9.png", "Images/cards/d10.png", "Images/cards/dj.png", "Images/cards/dq.png", "Images/cards/dk.png",
+        "Images/cards/h1.png", "Images/cards/h2.png", "Images/cards/h3.png", "Images/cards/h4.png", "Images/cards/h5.png", "Images/cards/h6.png", "Images/cards/h7.png", "Images/cards/h8.png", "Images/cards/h9.png", "Images/cards/h10.png", "Images/cards/hj.png", "Images/cards/hq.png", "Images/cards/hk.png",
+        "Images/cards/s1.png", "Images/cards/s2.png", "Images/cards/s3.png", "Images/cards/s4.png", "Images/cards/s5.png", "Images/cards/s6.png", "Images/cards/s7.png", "Images/cards/s8.png", "Images/cards/s9.png", "Images/cards/s10.png", "Images/cards/sj.png", "Images/cards/sq.png", "Images/cards/sk.png"
+    };
+
+    return cardImgName[num];
 }
 
 void PlayerLayer::DisplayPlayerHandCards(int index, const PokerPlayerInfo& playerInfo)
@@ -653,14 +808,18 @@ void PlayerLayer::DisplayPlayerHandCards(int index, const PokerPlayerInfo& playe
 			CCSprite* cardSprite = (CCSprite*)getChildByTag(cardTag);
 			if (cardSprite && cardSprite->isVisible() == false)
 			{
-				static const int CARD_WIDTH = 20;
-				static const int CARD_HEIGHT = 40;
+                const char* cardImgName = GetCardImgName((int)card.GetCard());
+                cardSprite->setVisible(true);
+                cardSprite->initWithFile(cardImgName);
 
-				int cardY = card.GetPicture() * CARD_HEIGHT;
-				int cardX = card.GetNumber() * CARD_WIDTH;
+				//static const int CARD_WIDTH = 20;
+				//static const int CARD_HEIGHT = 40;
 
-				cardSprite->setVisible(true);
-				cardSprite->initWithFile("Images/smallcards.png", CCRect(cardX, cardY, CARD_WIDTH, CARD_HEIGHT));
+				//int cardY = card.GetPicture() * CARD_HEIGHT;
+				//int cardX = card.GetNumber() * CARD_WIDTH;
+
+				//cardSprite->setVisible(true);
+				//cardSprite->initWithFile("Images/smallcards.png", CCRect(cardX, cardY, CARD_WIDTH, CARD_HEIGHT));
 			}
 		}
 	}
@@ -695,34 +854,36 @@ void PlayerLayer::HideHandCards()
 void PlayerLayer::DisplayDealer(const TableInfo& tableInfo)
 {
 	char pszInfo[256];
-	tableInfo.GetStringInfo(pszInfo);
 
-	char pszDealerInfo[256];
-	sprintf(pszDealerInfo, "Dealer \n %s ", pszInfo);
-	CCLabelTTF *label = (CCLabelTTF *)getChildByTag(10);
-	label->setString(pszDealerInfo);
-
+	CCLabelTTF* label;
+    label = (CCLabelTTF *)getChildByTag(GetTableMoneyTag());
+    sprintf(pszInfo, "%d", tableInfo.titleMoney);
+    label->setString(pszInfo);
+    label = (CCLabelTTF *)getChildByTag(GetCallMoneyTag());
+    sprintf(pszInfo, "%d", tableInfo.callMoney);
+    label->setString(pszInfo);
+    label = (CCLabelTTF *)getChildByTag(GetMyTableMoneyTag());
+    label->setString("0");
 }
 
 void PlayerLayer::DisplaySeq(PokerSequence seq)
 {
 	char pszInfo[256];
-	sprintf(pszInfo, "Seq: %s ", PokerSequenceStr[seq]);
-	CCLabelTTF *label = (CCLabelTTF *)getChildByTag(20);
+	sprintf(pszInfo, "ceq: %s ", PokerSequenceStr[seq]);
+	CCLabelTTF *label = (CCLabelTTF *)getChildByTag(GetSequenceTag());
 	label->setString(pszInfo);
 
 }
 
 void PlayerLayer::DisplayPlayerMan(const PlayerManInfo& playerManInfo)
 {
-    CCPoint sunPlayerPos(GetPlayerPos(playerManInfo.sunPlayerIndex));
-    sunPlayerPos.y += 46;
-    CCSprite* sunImg = (CCSprite*)getChildByTag(300);
+    CCPoint sunPlayerPos(GetSunPos(playerManInfo.sunPlayerIndex));
+    CCSprite* sunImg = (CCSprite*)getChildByTag(GetSunTag());
     sunImg->setVisible(true);
     sunImg->setPosition(sunPlayerPos);
 
-    CCPoint turnPlayerPos(GetPlayerPos(playerManInfo.turnIndex));
-    CCSprite* turnImg = (CCSprite*)getChildByTag(301);
+    CCPoint turnPlayerPos(GetTurnBoxPos(playerManInfo.turnIndex));
+    CCSprite* turnImg = (CCSprite*)getChildByTag(GetTurnBoxTag());
     turnImg->setVisible(true);
     turnImg->setPosition(turnPlayerPos);
 

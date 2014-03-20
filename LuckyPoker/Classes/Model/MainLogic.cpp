@@ -48,6 +48,7 @@ void MainLogic::update(float delta)
 	m_kRule.Update(delta);
 	m_kDealer.Update(delta);
 	m_kPlayerMan.Update(delta);
+    m_kDealer.PostUpdate(delta);
 }
 
 

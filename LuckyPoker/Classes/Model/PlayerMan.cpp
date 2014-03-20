@@ -198,7 +198,12 @@ void PlayerMan::EachPlayerBetting(int betIndex, float delta)
             }
         }
     }
-    else if (betAction == BET_ACTION_DONE) 
+}
+
+void PlayerMan::BetTurnOver()
+{
+    Player& player = m_akPokerPlayer[m_kPlayerManInfo.turnIndex];
+    if (player.IsBettingDone())
     {
         m_kPlayerManInfo.turnCount++;
         SetTurnOver();
@@ -255,85 +260,39 @@ bool PlayerMan::IsChoiceDone() const
 	return (uiAlivePlayerCount == uiChoiceDoneCount);
 }
 
-bool PlayerMan::IsBet1Done() const
+bool PlayerMan::IsBetDone(int betIndex)
 {
-	unsigned int uiAlivePlayerCount = GetAlivePlayerCount();
+    Player& turnPlayer = m_akPokerPlayer[m_kPlayerManInfo.turnIndex];
+    if (!turnPlayer.IsBettingDone())
+        return false;
+    if (turnPlayer.GetLastBetting(betIndex) != BETTING_CALL)
+        return false;
 
-	unsigned int uiDoneCount = 0;
-	for (unsigned int ui = 0; ui < MAX_POKERPLAYER_COUNT; ui++)
-	{
-		if (m_akPokerPlayer[ui].GetPlayerState() == Player::PLAYERSTATE_NONE)
-			continue;
+    unsigned int uiNextTurnIndex = 0;
+    for (unsigned int ui = m_kPlayerManInfo.turnIndex + 1; ui < m_kPlayerManInfo.turnIndex + 1 + MAX_POKERPLAYER_COUNT; ui++)
+    {
+        uiNextTurnIndex = ui;
+        if (uiNextTurnIndex >= MAX_POKERPLAYER_COUNT)
+            uiNextTurnIndex -= MAX_POKERPLAYER_COUNT;
 
-		if (m_akPokerPlayer[ui].IsDie())
-			continue;
+        if (m_akPokerPlayer[uiNextTurnIndex].GetPlayerState() == Player::PLAYERSTATE_NONE)
+            continue;
+        if (m_akPokerPlayer[uiNextTurnIndex].IsDie())
+            continue;
 
-		if (m_akPokerPlayer[ui].IsBet1CheckOrCall())
-			uiDoneCount++;
-	}
+        break;
+    }
 
-	return (uiAlivePlayerCount == uiDoneCount);
+    Player& nextPlayer = m_akPokerPlayer[uiNextTurnIndex];
+    if (nextPlayer.GetLastBetting(betIndex) == BETTING_NONE)
+        return false;
+
+    if (turnPlayer.GetLastBetMoney(betIndex) == nextPlayer.GetLastBetMoney(betIndex))
+        return true;
+
+    return false;
 }
 
-bool PlayerMan::IsBet2Done() const
-{
-	unsigned int uiAlivePlayerCount = GetAlivePlayerCount();
-
-	unsigned int uiDoneCount = 0;
-	for (unsigned int ui = 0; ui < MAX_POKERPLAYER_COUNT; ui++)
-	{
-		if (m_akPokerPlayer[ui].GetPlayerState() == Player::PLAYERSTATE_NONE)
-			continue;
-
-		if (m_akPokerPlayer[ui].IsDie())
-			continue;
-
-		if (m_akPokerPlayer[ui].IsBet2CheckOrCall())
-			uiDoneCount++;
-	}
-
-	return (uiAlivePlayerCount == uiDoneCount);
-}
-
-bool PlayerMan::IsBet3Done() const
-{
-	unsigned int uiAlivePlayerCount = GetAlivePlayerCount();
-
-	unsigned int uiDoneCount = 0;
-	for (unsigned int ui = 0; ui < MAX_POKERPLAYER_COUNT; ui++)
-	{
-		if (m_akPokerPlayer[ui].GetPlayerState() == Player::PLAYERSTATE_NONE)
-			continue;
-
-		if (m_akPokerPlayer[ui].IsDie())
-			continue;
-
-		if (m_akPokerPlayer[ui].IsBet3CheckOrCall())
-			uiDoneCount++;
-	}
-
-	return (uiAlivePlayerCount == uiDoneCount);
-}
-
-bool PlayerMan::IsBet4Done() const
-{
-	unsigned int uiAlivePlayerCount = GetAlivePlayerCount();
-
-	unsigned int uiDoneCount = 0;
-	for (unsigned int ui = 0; ui < MAX_POKERPLAYER_COUNT; ui++)
-	{
-		if (m_akPokerPlayer[ui].GetPlayerState() == Player::PLAYERSTATE_NONE)
-			continue;
-
-		if (m_akPokerPlayer[ui].IsDie())
-			continue;
-
-		if (m_akPokerPlayer[ui].IsBet4CheckOrCall())
-			uiDoneCount++;
-	}
-
-	return (uiAlivePlayerCount == uiDoneCount);
-}
 
 void PlayerMan::Clear()
 {
@@ -542,7 +501,6 @@ void PlayerMan::SetTurnOver()
 		break;
 	}
 
-
     m_akPokerPlayer[m_kPlayerManInfo.turnIndex].OnLeaveTurn();
 	m_kPlayerManInfo.turnIndex = uiNextTurnIndex;
     bool myTurn = (m_kPlayerManInfo.turnIndex == m_kPlayerManInfo.curPlayerIndex);
@@ -612,4 +570,15 @@ void PlayerMan::ReceivePacket(BettingInput* betInput)
         assert(0);
         return;
     }
+}
+
+int PlayerMan::GetPlayersMoney()
+{
+    int playersMoney = 0;
+    for (unsigned int ui = 0; ui < MAX_POKERPLAYER_COUNT; ui++)
+    {
+        playersMoney += m_akPokerPlayer[ui].GetMoney();
+    }
+
+    return playersMoney;
 }

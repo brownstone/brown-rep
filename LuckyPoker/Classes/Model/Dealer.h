@@ -16,6 +16,7 @@ public:
     void Clear();
     
     void Update(float delta);
+    void PostUpdate(float delta);
     void AddMoney(unsigned int money);
     
     int GetLastWinnerIndex();

@@ -126,10 +126,10 @@ void PokerRule::UpdateSequence(float delta)
         switch (m_eCurPokerSequence)
         {
         case POKERSEQUENCE_CHOICE:		jobdone = m_pkPlayerMan->IsChoiceDone();	break;
-        case POKERSEQUENCE_BET1:		jobdone = m_pkPlayerMan->IsBet1Done();	break;
-        case POKERSEQUENCE_BET2:		jobdone = m_pkPlayerMan->IsBet2Done();	break;
-        case POKERSEQUENCE_BET3:		jobdone = m_pkPlayerMan->IsBet3Done();	break;
-        case POKERSEQUENCE_BET4:		jobdone = m_pkPlayerMan->IsBet4Done();	break;
+        case POKERSEQUENCE_BET1:		jobdone = m_pkPlayerMan->IsBetDone(1);	break;
+        case POKERSEQUENCE_BET2:		jobdone = m_pkPlayerMan->IsBetDone(2);	break;
+        case POKERSEQUENCE_BET3:		jobdone = m_pkPlayerMan->IsBetDone(3);	break;
+        case POKERSEQUENCE_BET4:		jobdone = m_pkPlayerMan->IsBetDone(4);	break;
         }
     }
 

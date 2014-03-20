@@ -1,6 +1,7 @@
 #include "AppDelegate.h"
 #include "Assist/InstanceMan.h"
-#include "Scenes/IntroScene.h"
+//#include "Scenes/IntroScene.h"
+#include "Scenes/SelectScene.h"
 
 USING_NS_CC;
 
@@ -31,7 +32,8 @@ bool AppDelegate::applicationDidFinishLaunching() {
     InstanceMan::Create();
 
     // create a scene. it's an autorelease object
-    CCScene* pScene = IntroScene::scene();
+    //CCScene* pScene = IntroScene::scene();
+    CCScene* pScene = SelectScene::scene();
     pDirector->runWithScene(pScene);
 
     return true;

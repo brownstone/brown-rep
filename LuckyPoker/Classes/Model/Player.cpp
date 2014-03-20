@@ -272,7 +272,7 @@ int Player::GetPrepareBetting(int betIndex)
             // 처음할때, 삥, 쿼터, 하프, 풀 (체크와 콜제외)
             // 선택은 콜, 레이스, 다이...
 
-            if (raiseCount < 2)
+            if (raiseCount < MAX_POKERPLAYER_COUNT)
             {
                 result = BETTING_CALL | BETTING_QUARTER | BETTING_HALF | BETTING_DIE;
             }
@@ -344,7 +344,12 @@ void Player::StopThinking()
     m_kPokerPlayerInfo.eBetAction = BET_ACTION_THROW;
 }
 
-Betting Player::GetBetting(Betting ePriviousBetting) const
+bool Player::IsBettingDone()
+{
+    return (m_kPokerPlayerInfo.eBetAction == BET_ACTION_DONE);
+}
+
+Betting Player::GetBetting(Betting ePriviousBetting, int betIndex) const
 {
 	// 내가 갖고 있는 금액과 카드와 상대방 카드를 보고 좀더 생각하는 코드가 있어야한다.
 
@@ -358,6 +363,8 @@ Betting Player::GetBetting(Betting ePriviousBetting) const
 		// 첵, 삥, 쿼터, 하프, 풀을 할수 있다
 		// 콜, 레이스는 할수 없다.
 		int nRnd = rand() % 4;
+        if (betIndex == 1)
+            nRnd = 3;
 		if (nRnd == 0)
 		{
 			eResult = BETTING_BBING;
@@ -396,9 +403,11 @@ Betting Player::GetBetting(Betting ePriviousBetting) const
 			// 처음할때, 삥, 쿼터, 하프, 풀 (체크와 콜제외)
 			// 선택은 콜, 레이스, 다이...
 
-			if (uiRaiseCount < 2)
+			if (uiRaiseCount < MAX_POKERPLAYER_COUNT)
 			{
 				int nRnd = rand() % 3;
+                if (betIndex == 1)
+                    nRnd = 2;
 				if (nRnd == 0)
 				{
 					eResult = BETTING_CALL;
@@ -451,7 +460,7 @@ bool Player::DoBetting(int betIndex, Betting betting)
             //BiUiManager::GetInst()->
 
             if (betting == BETTING_NONE)
-                *bettingRef = GetBetting(*bettingRef);
+                *bettingRef = GetBetting(*bettingRef, betIndex);
             else 
                 *bettingRef = betting;
 
@@ -461,7 +470,7 @@ bool Player::DoBetting(int betIndex, Betting betting)
     case PLAYERSTATE_COMPUTER:
     case PLAYERSTATE_DISCONNECTER:
         {
-            *bettingRef = GetBetting(*bettingRef);
+            *bettingRef = GetBetting(*bettingRef, betIndex);
             bTurnOver = true;
             break;
         }
@@ -706,4 +715,9 @@ void Player::GetPlayerInfo(PokerPlayerInfo& playerInfo)
 void Player::GetPlayerJokbo(JokboResult& jokboInfo)
 {
 	jokboInfo = m_kJokboResult;
+}
+
+int Player::GetMoney() const
+{
+    return m_kPokerPlayerInfo.nTotalMoney;
 }

@@ -26,10 +26,7 @@ public:
     void DoChoice();
 	bool IsChoiceDone() const;
 	void EachPlayerBetting(int betIndex, float delta);
-	bool IsBet1Done() const;
-	bool IsBet2Done() const;
-	bool IsBet3Done() const;
-	bool IsBet4Done() const;
+	bool IsBetDone(int betIndex);
 	void Choice();
 	void Settle();
 	unsigned int GetMasterPlayerKey() const;
@@ -50,6 +47,10 @@ public:
     void GetPlayerManInfo(PlayerManInfo& playerManInfo);
 
     void ReceivePacket(BettingInput* betInput);
+
+    void BetTurnOver();
+
+    int GetPlayersMoney();
 
 
 protected:

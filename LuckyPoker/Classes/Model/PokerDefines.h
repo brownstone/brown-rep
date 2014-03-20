@@ -420,13 +420,13 @@ struct PokerPlayerInfo
         switch (bet)
         {
         case BETTING_NONE:	strcat(szInformation, " ");	break;
-        case BETTING_CHECK:	sprintf(szInformation, "Check: %d", money);	break;
-        case BETTING_BBING:	sprintf(szInformation, "BBing: %d", money);	break;
-        case BETTING_CALL:	sprintf(szInformation, "Call: %d", money);	break;
-        case BETTING_QUARTER:	sprintf(szInformation, "Quarter: %d", money);	break;
-        case BETTING_HALF:	sprintf(szInformation, "Half: %d", money);	break;
-        case BETTING_FULL:	sprintf(szInformation, "Full: %d", money);	break;
-        case BETTING_DOUBLE:	sprintf(szInformation, "Double: %d", money);	break;
+        case BETTING_CHECK:	sprintf(szInformation, "Check \n %d", money);	break;
+        case BETTING_BBING:	sprintf(szInformation, "BBing \n %d", money);	break;
+        case BETTING_CALL:	sprintf(szInformation, "Call \n %d", money);	break;
+        case BETTING_QUARTER:	sprintf(szInformation, "Quarter \n %d", money);	break;
+        case BETTING_HALF:	sprintf(szInformation, "Half \n %d", money);	break;
+        case BETTING_FULL:	sprintf(szInformation, "Full \n %d", money);	break;
+        case BETTING_DOUBLE:	sprintf(szInformation, "Double \n %d", money);	break;
         //case BETTING_ALLIN:	strcat(szInformation, "B1_AL");	break;
         case BETTING_DIE:	strcat(szInformation, "Die");	break;
         }

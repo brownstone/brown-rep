@@ -107,6 +107,50 @@ void Dealer::Update(float delta)
     }
 }
 
+void Dealer::PostUpdate(float delta)
+{
+    PokerSequence sequence = m_pkPokerRule->GetCurPokerSequence();
+    switch (sequence) 
+    {
+    case POKERSEQUENCE_BET1:
+        CalcMoney(1);
+        if (!m_pkPlayerMan->IsBetDone(1))
+            m_pkPlayerMan->BetTurnOver();
+        break;
+    case POKERSEQUENCE_BET2:
+        CalcMoney(2);
+        if (!m_pkPlayerMan->IsBetDone(2))
+            m_pkPlayerMan->BetTurnOver();
+        break;
+    case POKERSEQUENCE_BET3:
+        CalcMoney(3);
+        if (!m_pkPlayerMan->IsBetDone(3))
+            m_pkPlayerMan->BetTurnOver();
+        break;
+    case POKERSEQUENCE_BET4:
+        CalcMoney(4);
+        if (!m_pkPlayerMan->IsBetDone(4))
+            m_pkPlayerMan->BetTurnOver();
+        break;
+    default: 
+        break;
+    }
+
+    {
+        // for debug
+        int playersMoney = m_pkPlayerMan->GetPlayersMoney();
+        int totalMoney = playersMoney + m_kTableInfo.titleMoney;
+
+        if (totalMoney != 500000)
+        {
+            int aa = 0;
+            aa++;
+        }
+
+    }
+}
+
+
 void Dealer::CalcSchoolMoney()
 {
 	for (unsigned int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
