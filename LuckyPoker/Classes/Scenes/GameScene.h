@@ -31,12 +31,15 @@ public:
 	virtual void update(float delta);
 
     void menuCallbackBetBtns(CCObject* pSender);
+    void removeFromParentAndCleanup(CCNode* pSender, void* data);
 
 
 	// implement the "static node()" method manually
 	CREATE_FUNC(PlayerLayer);
 
 private:
+    void MirrorGame();
+
     void DisplayPlayer(int index, const PokerPlayerInfo& playerInfo);
     void DisplayBetting(int index, int betIndex, const PokerPlayerInfo& playerInfo);
 	void DisplayPlayerHandCards(int index, const PokerPlayerInfo& playerInfo);
@@ -63,6 +66,8 @@ private:
     CCPoint GetJokboLabelPos(int playerIndex) const;
     CCPoint GetTurnBoxPos(int playerIndex) const;
     CCPoint GetSunPos(int playerIndex) const;
+    CCPoint GetDeckPos() const;
+    CCPoint GetWinPos(int playerIndex) const;
 
     int GetPlayerNameTag(int playerIndex) const;
     int GetPlayerMoneyTag(int playerIndex) const;
@@ -75,12 +80,19 @@ private:
     int GetCardSpriteTag(int playerIndex, int cardIndex) const;
     int GetJokboLabelTag(int playerIndex, int labelIndex) const;
 
+    int GetWinTag() const;
+
     int GetTurnBoxTag() const;
     int GetSunTag() const;
+
+    void OnThrowCard(int index);
+    void OnCelebrationWinnerStart();
+    void OnCelebrationWinnerEnd();
 
 private:
 	MainLogic* m_pMainLogic;
 
+    DealerInfo      m_kDealerInfo;
 	PlayerManInfo   m_kPlayerManInfo;
 	PokerPlayerInfo m_kPlayerInfos[MAX_POKERPLAYER_COUNT];
 	JokboResult		m_kPlayerJokbo[MAX_POKERPLAYER_COUNT];
@@ -90,6 +102,8 @@ private:
 
     int btnsTurnCount;
     int btnsBetIndex;
+
+    const char* GetCardImgName(int num);
 
 };
 

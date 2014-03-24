@@ -67,7 +67,7 @@ public:
     unsigned int GetLastBetMoney(int betIndex);
 	void ExactCalc(int betIndex);
 	void ExactCalcSchoolMoney();
-    Betting GetBetting(Betting ePriviousBetting, int betIndex) const;
+    Betting GetBetting(int betIndex) const;
 
     void GetStringInfo(char szInformation[]) const;
     //char* GetCardStringInfo(const Card& kCard, char szCard[]) const

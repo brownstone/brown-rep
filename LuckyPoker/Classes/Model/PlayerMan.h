@@ -48,7 +48,7 @@ public:
 
     void ReceivePacket(BettingInput* betInput);
 
-    void BetTurnOver();
+    void BetTurnOver(int betIndex);
 
     int GetPlayersMoney();
 

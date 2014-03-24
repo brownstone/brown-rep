@@ -206,7 +206,7 @@ CCPoint PlayerLayer::GetCardSpritePos(int playerIndex, int cardIndex) const
 CCPoint PlayerLayer::GetJokboLabelPos(int playerIndex) const
 {
     CCPoint pos = GetCardSpritePos(playerIndex, 3);
-    pos.y -= 40;
+    pos.y -= 57;
 
     return pos;
 }
@@ -231,6 +231,23 @@ CCPoint PlayerLayer::GetSunPos(int playerIndex) const
 
     CCPoint pos = GetCardSpritePos(playerIndex, 0);
     pos.y += 60;
+
+    return pos;
+}
+
+CCPoint PlayerLayer::GetDeckPos() const
+{
+    return CCPoint(600, 650);
+}
+
+CCPoint PlayerLayer::GetWinPos(int playerIndex) const
+{
+    if (playerIndex >= MAX_POKERPLAYER_COUNT) {
+        return CCPoint(0,0);
+    }
+
+    CCPoint pos = GetBettingInfoPos(playerIndex);
+    pos.y += 40;
 
     return pos;
 }
@@ -291,6 +308,11 @@ int PlayerLayer::GetSunTag() const
 {
     return 310;
 
+}
+
+int PlayerLayer::GetWinTag() const
+{
+    return 350;
 }
 
 
@@ -378,6 +400,13 @@ bool PlayerLayer::init()
 			this->addChild(pLabel, 2, GetJokboLabelTag(i, 0));
 		}
 	}
+
+    // win label
+    pLabel = CCLabelTTF::create(" ", "Marker Felt", 26);
+    pLabel->setPosition(GetWinPos(0));
+    pLabel->setColor(ccRED);
+    this->addChild(pLabel, 7, GetWinTag());
+
 	{ // turn, sun
         CCSprite* turnImg = CCSprite::create(s_pPathPBoxTurn);
         turnImg->setPosition(GetTurnBoxPos(0));
@@ -484,11 +513,24 @@ void PlayerLayer::onEnter()
 {
 	CCLayer::onEnter();
 	scheduleUpdate();
+
+    MirrorGame();
+}
+
+void PlayerLayer::MirrorGame()
+{
+    m_pMainLogic->GetPlayerInfo(m_kPlayerInfos);
+    for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+    {
+        DisplayPlayer(i, m_kPlayerInfos[i]);
+    }
 }
 
 void PlayerLayer::update(float delta)
 {
 	CCLayer::update(delta);
+
+    m_pMainLogic->GetDealerInfo(m_kDealerInfo);
 
     bool playerChanged = false;
     bool jokboChanged = false;
@@ -496,19 +538,19 @@ void PlayerLayer::update(float delta)
     bool seqChanged = false;
     bool playerManChanged = false;
 
-
 	// player info
-	PokerPlayerInfo playerInfos[MAX_POKERPLAYER_COUNT];
-	m_pMainLogic->GetPlayerInfo(playerInfos);
+    PokerPlayerInfo playerInfos[MAX_POKERPLAYER_COUNT];
+    m_pMainLogic->GetPlayerInfo(playerInfos);
 
 	for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
 	{
-		bool changed = m_kPlayerInfos[i].Changed(playerInfos[i]);
+        bool changed = m_kPlayerInfos[i].Changed(playerInfos[i]);
         playerChanged |= changed;
-		if (changed)
-		{
+        if (changed)
+        {
             DisplayPlayer(i, playerInfos[i]);
-		}
+            DisplayPlayerHandCards(i, playerInfos[i]);
+        }
 	}
 
 	// jokbo info
@@ -528,7 +570,7 @@ void PlayerLayer::update(float delta)
 
 	// dealer info
 	TableInfo tableInfo;
-	m_pMainLogic->GetDealerInfo(tableInfo);
+	m_pMainLogic->GetTableInfo(tableInfo);
 	bool dealerChanged = m_kTableInfo.Changed(tableInfo);
 	if (dealerChanged)
 	{
@@ -540,9 +582,26 @@ void PlayerLayer::update(float delta)
 	seqChanged = (m_kPokerSequence != seq);
 	if (seqChanged)
 	{
+        if (seq == POKERSEQUENCE_DEALFIRSTCARD)
+            OnThrowCard(0);
+        if (seq == POKERSEQUENCE_DEAL1)
+            OnThrowCard(1);
+        if (seq == POKERSEQUENCE_DEAL2)
+            OnThrowCard(2);
+        if (seq == POKERSEQUENCE_DEAL3)
+            OnThrowCard(3);
+        if (seq == POKERSEQUENCE_DEAL4)
+            OnThrowCard(4);
+
+        if (seq == POKERSEQUENCE_SETTLE)
+            OnCelebrationWinnerStart();
+        if (seq == POKERSEQUENCE_END || m_kPokerSequence == POKERSEQUENCE_RESULT)
+            OnCelebrationWinnerEnd();
+
+
 		DisplaySeq(seq);
 
-		if (seq == POKERSEQUENCE_START || seq == POKERSEQUENCE_RESULT)
+		if (seq == POKERSEQUENCE_START || seq == POKERSEQUENCE_END)
 		{
             btnsTurnCount = 0;
             btnsBetIndex = 0;
@@ -551,7 +610,7 @@ void PlayerLayer::update(float delta)
             ShowTurnSun(false);
 		}
 
-        if (seq == POKERSEQUENCE_BET1 || seq == POKERSEQUENCE_BET2 ||
+        if (/*seq == POKERSEQUENCE_BET1 || */seq == POKERSEQUENCE_BET2 ||
             seq == POKERSEQUENCE_BET3 || seq == POKERSEQUENCE_BET4)
         {
             ShowBetBtns(true);
@@ -674,6 +733,166 @@ void PlayerLayer::update(float delta)
     }
 }
 
+void PlayerLayer::OnThrowCard(int index)
+{
+    int startThrowCardIndex = 0;
+    int endThrowCardIndex = 0;
+
+    if (index == 0)
+    {
+        startThrowCardIndex = 0;
+        endThrowCardIndex = 3;
+    }
+    if (index == 1)
+    {
+        startThrowCardIndex = 3;
+        endThrowCardIndex = 4;
+    }
+    if (index == 2)
+    {
+        startThrowCardIndex = 4;
+        endThrowCardIndex = 5;
+    }
+    if (index == 3)
+    {
+        startThrowCardIndex = 5;
+        endThrowCardIndex = 6;
+    }
+    if (index == 4)
+    {
+        startThrowCardIndex = 6;
+        endThrowCardIndex = 7;
+    }
+
+    if (index == 1 || index == 2 || index == 3 || index == 3)
+    {
+        for (int cardIndex = startThrowCardIndex; cardIndex < endThrowCardIndex; cardIndex++)
+        {
+            for (unsigned int ui = m_kPlayerManInfo.turnIndex; ui < m_kPlayerManInfo.turnIndex + MAX_POKERPLAYER_COUNT; ui++)
+            {
+                unsigned int playerIndex = ui;
+                if (playerIndex >= MAX_POKERPLAYER_COUNT)
+                    playerIndex -= MAX_POKERPLAYER_COUNT;
+
+                if (m_kPlayerInfos[playerIndex].bDie)
+                    continue;
+
+                CCSprite* cardSprite = (CCSprite*)getChildByTag(GetCardSpriteTag(playerIndex, cardIndex));
+                cardSprite->setVisible(false);
+            }
+        }
+    }
+
+    int count = 0;
+    for (int cardIndex = startThrowCardIndex; cardIndex < endThrowCardIndex; cardIndex++)
+    {
+        for (unsigned int ui = m_kPlayerManInfo.turnIndex; ui < m_kPlayerManInfo.turnIndex + MAX_POKERPLAYER_COUNT; ui++)
+        {
+            unsigned int playerIndex = ui;
+            if (playerIndex >= MAX_POKERPLAYER_COUNT)
+                playerIndex -= MAX_POKERPLAYER_COUNT;
+
+            if (m_kPlayerInfos[playerIndex].bDie)
+                continue;
+
+            CCSprite* backcard = CCSprite::create(GetCardImgName(0));
+            backcard->setPosition(GetDeckPos());
+            backcard->setVisible(false);
+            addChild(backcard, 5);
+
+            float delayInterbal = index * 0.05f + 0.15f;
+            float delayTime = count * delayInterbal;
+            int data = playerIndex * 10 + cardIndex;
+            CCPoint targetPos = GetCardSpritePos(playerIndex, cardIndex);
+
+            float moveTime = index * 0.05 + 0.3f;
+            CCActionInterval*  moveEaseOut = 0;
+            CCActionInterval*  move = CCMoveTo::create(moveTime, targetPos);
+
+            if (index == 0)
+            {
+                moveEaseOut = move;
+            } 
+            else if (index == 1)
+            {
+                moveEaseOut = CCEaseExponentialIn::create((CCActionInterval*)(move->copy()->autorelease()) );
+            } 
+            else if (index == 2)
+            {
+                moveEaseOut = CCEaseExponentialOut::create((CCActionInterval*)(move->copy()->autorelease()) );
+            }
+            else if (index == 3)
+            {
+                moveEaseOut = CCEaseBackOut::create((CCActionInterval*)(move->copy()->autorelease()) );
+            }
+            else
+            {
+                CCActionInterval* ainter_1_1 = CCEaseExponentialOut::create((CCActionInterval*)(move->copy()->autorelease()) );
+                CCSequence* seq_1 = CCSequence::create(ainter_1_1, NULL);
+
+                CCActionInterval* ainter_2_1 = CCScaleTo::create(0.3f, 4.5f);
+                CCActionInterval* ainter_2_2 = CCScaleTo::create(0.1f, 1.0f);
+                CCSequence* seq_2 = CCSequence::create(ainter_2_1, ainter_2_2, NULL);
+
+                CCSpawn* spawn = CCSpawn::create(seq_1, seq_2, NULL);
+
+                moveEaseOut = spawn;
+            }
+
+            CCFiniteTimeAction* action = CCSequence::create(CCDelayTime::create(delayTime), CCShow::create(), moveEaseOut,
+                CCCallFuncND::create(this, callfuncND_selector(PlayerLayer::removeFromParentAndCleanup), (void*)data),
+                NULL);
+
+            backcard->runAction(action);
+            count++;
+        }
+    }
+}
+
+void PlayerLayer::OnCelebrationWinnerStart()
+{
+    char pszInfo[256];
+    sprintf(pszInfo, "Win \n +%d", m_kDealerInfo.nLastWinnerPrice);
+
+    CCLabelTTF* label = (CCLabelTTF*)getChildByTag(GetWinTag());
+    if (label)
+    {
+        label->setVisible(true);
+        label->setPosition(GetWinPos(m_kDealerInfo.nLastWinnerIndex));
+        label->setString(pszInfo);
+    }
+}
+void PlayerLayer::OnCelebrationWinnerEnd()
+{
+    CCLabelTTF* label = (CCLabelTTF*)getChildByTag(GetWinTag());
+    if (label)
+    {
+        label->setVisible(false);
+    }
+}
+
+
+void PlayerLayer::removeFromParentAndCleanup(CCNode* pSender, void* data)
+{
+    pSender->removeFromParentAndCleanup(true);
+
+    int playerIndex = (int)((int)data * 0.1f);
+    int cardIndex = (int)data % 10;
+    CCSprite* cardSprite = (CCSprite*)getChildByTag(GetCardSpriteTag(playerIndex, cardIndex));
+
+    if (cardIndex < 3)
+    {
+        const char* cardImgName = GetCardImgName(0); // back face card.
+        cardSprite->initWithFile(cardImgName);
+        cardSprite->setVisible(true);
+    } 
+    else 
+    {
+        cardSprite->setVisible(true);
+    }
+}
+
+
 void PlayerLayer::ShowBetBtns(bool show)
 {
     int menuTag = 400;
@@ -741,8 +960,6 @@ void PlayerLayer::ReadyBtns(int betting)
 
 void PlayerLayer::DisplayPlayer(int index, const PokerPlayerInfo& playerInfo)
 {
-
-
 	char pszPlayerInfo[256];
 	sprintf(pszPlayerInfo, "player %d", index);
     CCLabelTTF* label;
@@ -752,8 +969,6 @@ void PlayerLayer::DisplayPlayer(int index, const PokerPlayerInfo& playerInfo)
     label = (CCLabelTTF*)getChildByTag(GetPlayerMoneyTag(index));
     sprintf(pszPlayerInfo, "%d", playerInfo.nTotalMoney);
     label->setString(pszPlayerInfo);
-
-	DisplayPlayerHandCards(index, playerInfo);
 }
 
 void PlayerLayer::DisplayBetting(int index, int betIndex, const PokerPlayerInfo& playerInfo)
@@ -774,7 +989,7 @@ void PlayerLayer::ClearBetString()
     }
 }
 
-static const char* GetCardImgName(int num)
+const char* PlayerLayer::GetCardImgName(int num)
 {
     static const char* cardImgName[] = {
         "Images/cards/b1fv.png",
@@ -806,20 +1021,11 @@ void PlayerLayer::DisplayPlayerHandCards(int index, const PokerPlayerInfo& playe
 		{
 			int cardTag = GetCardSpriteTag(index, i);
 			CCSprite* cardSprite = (CCSprite*)getChildByTag(cardTag);
-			if (cardSprite && cardSprite->isVisible() == false)
+			if (cardSprite)
 			{
                 const char* cardImgName = GetCardImgName((int)card.GetCard());
                 cardSprite->setVisible(true);
                 cardSprite->initWithFile(cardImgName);
-
-				//static const int CARD_WIDTH = 20;
-				//static const int CARD_HEIGHT = 40;
-
-				//int cardY = card.GetPicture() * CARD_HEIGHT;
-				//int cardX = card.GetNumber() * CARD_WIDTH;
-
-				//cardSprite->setVisible(true);
-				//cardSprite->initWithFile("Images/smallcards.png", CCRect(cardX, cardY, CARD_WIDTH, CARD_HEIGHT));
 			}
 		}
 	}
@@ -930,9 +1136,8 @@ bool GameScene::init()
 
 void GameScene::update(float delta)
 {
+    UpdateLogic(delta);
 	CCScene::update(delta);
-
-	UpdateLogic(delta);
 }
 
 void GameScene::UpdateLogic(float delta)

@@ -221,20 +221,74 @@ unsigned int Player::GetTempSchoolMoney()
 
 void Player::OnEnterTurn(bool myTurn)
 {
-    float thinkTime = 1.0f;
+    float thinkTime = 0.7f;
     if (myTurn)
     {
         thinkTime = 10.0f;
     }
     m_kPokerPlayerInfo.eBetAction = BET_ACTION_THINK_PREPARE;
     m_kPokerPlayerInfo.fThinkTime = thinkTime;
-    m_kPokerPlayerInfo.fThrowTime = 0.6f;
+    m_kPokerPlayerInfo.fThrowTime = 0.4f;
     m_kPokerPlayerInfo.onMyTurn = myTurn;
 }
 
 void Player::OnLeaveTurn()
 {
     m_kPokerPlayerInfo.onMyTurn = false;
+}
+
+BetAction Player::Thinking(int betIndex, float delta)
+{
+    switch (m_kPokerPlayerInfo.eBetAction)
+    {
+    case BET_ACTION_THINK_PREPARE:
+        m_kPokerPlayerInfo.ePrepareBetting = (Betting)GetPrepareBetting(betIndex);
+        m_kPokerPlayerInfo.eBetAction = BET_ACTION_THINK;
+        break;
+    case BET_ACTION_THINK: 
+        m_kPokerPlayerInfo.fThinkTime -= delta;
+        if (m_kPokerPlayerInfo.onMyTurn) 
+        {
+            if (m_kPokerPlayerInfo.fThinkTime < 0.5f)
+            {
+                m_kPokerPlayerInfo.onMyTurn = false;
+            }
+
+        }
+        if (m_kPokerPlayerInfo.fThinkTime < 0.0f) 
+        {
+            m_kPokerPlayerInfo.eBetAction = BET_ACTION_BETTING;
+        }
+        break;
+    case BET_ACTION_BETTING:
+        m_kPokerPlayerInfo.eBetAction = BET_ACTION_THROW;
+        break;
+    case BET_ACTION_THROW:
+        m_kPokerPlayerInfo.fThrowTime -= delta;
+        if (m_kPokerPlayerInfo.fThrowTime < 0.0f)
+        {
+            m_kPokerPlayerInfo.eBetAction = BET_ACTION_DONE;
+        }
+        break;
+    default: assert(0); break;
+    }
+
+    return m_kPokerPlayerInfo.eBetAction;
+}
+
+bool Player::IsThinking()
+{
+    return (m_kPokerPlayerInfo.eBetAction == BET_ACTION_THINK);
+}
+
+void Player::StopThinking()
+{
+    m_kPokerPlayerInfo.eBetAction = BET_ACTION_THROW;
+}
+
+bool Player::IsBettingDone()
+{
+    return (m_kPokerPlayerInfo.eBetAction == BET_ACTION_DONE);
 }
 
 int Player::GetPrepareBetting(int betIndex)
@@ -295,140 +349,155 @@ int Player::GetPrepareBetting(int betIndex)
     return result;
 }
 
-BetAction Player::Thinking(int betIndex, float delta)
-{
-    switch (m_kPokerPlayerInfo.eBetAction)
-    {
-    case BET_ACTION_THINK_PREPARE:
-        m_kPokerPlayerInfo.ePrepareBetting = (Betting)GetPrepareBetting(betIndex);
-        m_kPokerPlayerInfo.eBetAction = BET_ACTION_THINK;
-        break;
-    case BET_ACTION_THINK: 
-        m_kPokerPlayerInfo.fThinkTime -= delta;
-        if (m_kPokerPlayerInfo.onMyTurn) 
-        {
-            if (m_kPokerPlayerInfo.fThinkTime < 0.5f)
-            {
-                m_kPokerPlayerInfo.onMyTurn = false;
-            }
 
-        }
-        if (m_kPokerPlayerInfo.fThinkTime < 0.0f) 
-        {
-            m_kPokerPlayerInfo.eBetAction = BET_ACTION_BETTING;
-        }
-        break;
-    case BET_ACTION_BETTING:
-        m_kPokerPlayerInfo.eBetAction = BET_ACTION_THROW;
-        break;
-    case BET_ACTION_THROW:
-        m_kPokerPlayerInfo.fThrowTime -= delta;
-        if (m_kPokerPlayerInfo.fThrowTime < 0.0f)
-        {
-            m_kPokerPlayerInfo.eBetAction = BET_ACTION_DONE;
-        }
-        break;
-    default: assert(0); break;
-    }
-
-    return m_kPokerPlayerInfo.eBetAction;
-}
-
-bool Player::IsThinking()
-{
-    return (m_kPokerPlayerInfo.eBetAction == BET_ACTION_THINK);
-}
-
-void Player::StopThinking()
-{
-    m_kPokerPlayerInfo.eBetAction = BET_ACTION_THROW;
-}
-
-bool Player::IsBettingDone()
-{
-    return (m_kPokerPlayerInfo.eBetAction == BET_ACTION_DONE);
-}
-
-Betting Player::GetBetting(Betting ePriviousBetting, int betIndex) const
+Betting Player::GetBetting(int betIndex) const
 {
 	// 내가 갖고 있는 금액과 카드와 상대방 카드를 보고 좀더 생각하는 코드가 있어야한다.
 
-    const Betting BET_LIMIT = BETTING_QUARTER;
-	Betting eResult = BETTING_NONE;
-    unsigned int uiRaiseCount = m_pkDealer->GetRaiseCount();
 
-	if (uiRaiseCount == 0)
-	{
-		// 처음이라는 것은
-		// 첵, 삥, 쿼터, 하프, 풀을 할수 있다
-		// 콜, 레이스는 할수 없다.
-		int nRnd = rand() % 4;
-        if (betIndex == 1)
-            nRnd = 3;
-		if (nRnd == 0)
-		{
-			eResult = BETTING_BBING;
-		}
-		else if (nRnd == 1)
-		{
-			eResult = BETTING_CHECK;
-		}
-		else if (nRnd == 2)
-		{
-			eResult = BETTING_BBING;
-		}
-		else if (nRnd == 3)
-		{
-            eResult = BET_LIMIT;
-		}
-	}
-	else
-	{
-		if (ePriviousBetting == BETTING_CALL || ePriviousBetting == BETTING_CHECK)
-		{
-			// 콜이냐 다이냐?
-			int nRnd = rand() % 2;
-			if (nRnd == 0)
-			{
-				eResult = BETTING_DIE;
-			}
-			else if (nRnd == 1)
-			{
-				eResult = BETTING_CALL;
-			}
-		}
-		else //  if (ePriviousBetting == BETTING_QUARTER || ePriviousBetting == BETTING_HALF || ePriviousBetting == BETTING_FULL)
-		{
-			// 전에 레이스였기 때문에 더 레이스할수 있다
-			// 처음할때, 삥, 쿼터, 하프, 풀 (체크와 콜제외)
-			// 선택은 콜, 레이스, 다이...
+    //BETTING_QUARTER = 0x8,
+    //BETTING_HALF    = 0x10,
+    //BETTING_FULL    = 0x20,
+    //BETTING_DOUBLE  = 0x40,
 
-			if (uiRaiseCount < MAX_POKERPLAYER_COUNT)
-			{
-				int nRnd = rand() % 3;
-                if (betIndex == 1)
-                    nRnd = 2;
-				if (nRnd == 0)
-				{
-					eResult = BETTING_CALL;
-				}
-				else if (nRnd == 1)
-				{
-					eResult = BETTING_DIE;
-				}
-				else if (nRnd == 2)
-				{
-					eResult = BET_LIMIT;
-				}
-			}
-			else
-			{
-				eResult = BETTING_CALL;
-			}
-		}
-	}
+    enum PlayerInclination 
+    {
+        PI_NONE,
+        PI_CONSERVATIVE,
+        PI_MODERATE,
+        PI_LIBERAL,
+    };
+    PlayerInclination pi = PI_NONE;
 
-	return eResult;
+    int nRnd = rand() % 4;
+    if (nRnd == 0 || nRnd == 1)
+        pi = PI_CONSERVATIVE;
+    if (nRnd == 2)
+        pi = PI_MODERATE;
+    if (nRnd == 3)
+        pi = PI_LIBERAL;
+
+    if (betIndex == 1)
+        pi = PI_CONSERVATIVE;
+
+    bool canRaise = false;
+    bool canCall = false;
+    bool canBBing = false;
+    bool canCheck = false;
+    
+    int raiseBet = BETTING_QUARTER | BETTING_HALF | BETTING_FULL | BETTING_DOUBLE;
+    int preBet = m_kPokerPlayerInfo.ePrepareBetting;
+    if (preBet & raiseBet)
+        canRaise = true;
+    if (preBet & BETTING_CALL)
+        canCall = true;
+    if (preBet & BETTING_BBING)
+        canBBing = true;
+    if (preBet & BETTING_CHECK)
+        canCheck = true;
+
+    Betting eResult = BETTING_NONE;
+
+    switch (pi) 
+    {
+    case PI_CONSERVATIVE:
+        if (canRaise)            eResult = BETTING_QUARTER;
+        else if (canCall)        eResult = BETTING_CALL;
+        else if (canCheck)       eResult = BETTING_CHECK;
+        else                     eResult = BETTING_DIE;
+        
+        break;
+    case PI_MODERATE:
+        if (canCall)             eResult = BETTING_CALL;
+        else if (canCheck)       eResult = BETTING_CHECK;
+        else                     eResult = BETTING_DIE;
+        break;
+    case PI_LIBERAL:
+        if (canCheck)            eResult = BETTING_CHECK;
+        else                     eResult = BETTING_DIE;
+        break;
+    default:                     eResult = BETTING_DIE;
+        break;
+    }
+
+    return eResult;
+
+ //   const Betting BET_LIMIT = BETTING_QUARTER;
+	//Betting eResult = BETTING_NONE;
+ //   unsigned int uiRaiseCount = m_pkDealer->GetRaiseCount();
+
+	//if (uiRaiseCount == 0)
+	//{
+	//	// 처음이라는 것은
+	//	// 첵, 삥, 쿼터, 하프, 풀을 할수 있다
+	//	// 콜, 레이스는 할수 없다.
+	//	int nRnd = rand() % 4;
+ //       if (betIndex == 1)
+ //           nRnd = 3;
+	//	if (nRnd == 0)
+	//	{
+	//		eResult = BETTING_BBING;
+	//	}
+	//	else if (nRnd == 1)
+	//	{
+	//		eResult = BETTING_CHECK;
+	//	}
+	//	else if (nRnd == 2)
+	//	{
+	//		eResult = BETTING_BBING;
+	//	}
+	//	else if (nRnd == 3)
+	//	{
+ //           eResult = BET_LIMIT;
+	//	}
+	//}
+	//else
+	//{
+	//	if (ePriviousBetting == BETTING_CALL || ePriviousBetting == BETTING_CHECK)
+	//	{
+	//		// 콜이냐 다이냐?
+	//		int nRnd = rand() % 2;
+	//		if (nRnd == 0)
+	//		{
+	//			eResult = BETTING_DIE;
+	//		}
+	//		else if (nRnd == 1)
+	//		{
+	//			eResult = BETTING_CALL;
+	//		}
+	//	}
+	//	else //  if (ePriviousBetting == BETTING_QUARTER || ePriviousBetting == BETTING_HALF || ePriviousBetting == BETTING_FULL)
+	//	{
+	//		// 전에 레이스였기 때문에 더 레이스할수 있다
+	//		// 처음할때, 삥, 쿼터, 하프, 풀 (체크와 콜제외)
+	//		// 선택은 콜, 레이스, 다이...
+
+	//		if (uiRaiseCount < MAX_POKERPLAYER_COUNT)
+	//		{
+	//			int nRnd = rand() % 3;
+ //               if (betIndex == 1)
+ //                   nRnd = 2;
+	//			if (nRnd == 0)
+	//			{
+	//				eResult = BETTING_CALL;
+	//			}
+	//			else if (nRnd == 1)
+	//			{
+	//				eResult = BETTING_DIE;
+	//			}
+	//			else if (nRnd == 2)
+	//			{
+	//				eResult = BET_LIMIT;
+	//			}
+	//		}
+	//		else
+	//		{
+	//			eResult = BETTING_CALL;
+	//		}
+	//	}
+	//}
+
+	//return eResult;
 }
 
 bool Player::DoBetting(int betIndex, Betting betting)
@@ -460,7 +529,7 @@ bool Player::DoBetting(int betIndex, Betting betting)
             //BiUiManager::GetInst()->
 
             if (betting == BETTING_NONE)
-                *bettingRef = GetBetting(*bettingRef, betIndex);
+                *bettingRef = GetBetting(betIndex);
             else 
                 *bettingRef = betting;
 
@@ -470,7 +539,7 @@ bool Player::DoBetting(int betIndex, Betting betting)
     case PLAYERSTATE_COMPUTER:
     case PLAYERSTATE_DISCONNECTER:
         {
-            *bettingRef = GetBetting(*bettingRef, betIndex);
+            *bettingRef = GetBetting(betIndex);
             bTurnOver = true;
             break;
         }
@@ -669,38 +738,6 @@ void Player::GetStringInfo(char szInformation[]) const
 	szInformation[0] = 0;
 
 }
-
-
-//char* Player::GetCardStringInfo(const Card& kCard, char szCard[]) const
-//{
-//	if (kCard.GetCard() == 0)
-//		strcpy_s(szCard, 128, "    ");
-//	else
-//	{
-//		char szC[64];
-//		switch (kCard.GetNumber())
-//		{
-//		case 0: strcpy_s(szC, 64, "A  "); break;
-//		case 1: 
-//		case 2: 
-//		case 3: 
-//		case 4: 
-//		case 5: 
-//		case 6: 
-//		case 7: 
-//		case 8: 
-//			sprintf_s(szC, 64, "%d  ", kCard.GetNumber() + 1); break;
-//		case 9: 
-//			sprintf_s(szC, 64, "%d ", kCard.GetNumber() + 1); break;
-//		case 10: strcpy_s(szC, 64, "J  "); break;
-//		case 11: strcpy_s(szC, 64, "Q  "); break;
-//		case 12: strcpy_s(szC, 64, "K  "); break;
-//		}
-//		sprintf_s(szCard, 128, "%d%s", kCard.GetPicture(), szC);
-//	}
-//
-//	return szCard;
-//}
 
 void Player::AddMoney(unsigned int money)
 {

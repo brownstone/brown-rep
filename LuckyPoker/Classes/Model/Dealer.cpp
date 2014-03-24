@@ -17,9 +17,7 @@ bool Dealer::Init(PokerRule* rule, PlayerMan* playerMan)
     m_pkPokerRule = rule;
     m_pkPlayerMan = playerMan;
     
-    m_nGameCount = 0;
-    m_nMostMoney = 0;
-    m_nLastWinnerIndex = 0;
+    m_kDealerInfo.Init();
     
 	m_kTableInfo.Init();
 	m_kTableInfo.seedMoney = 10;
@@ -39,7 +37,7 @@ void Dealer::Update(float delta)
     switch (sequence) 
     {
     case POKERSEQUENCE_START:
-        m_nGameCount++;
+        m_kDealerInfo.nGameCount++;
         ResetTitleMoney();
         break;
     case POKERSEQUENCE_SHUFFLE:
@@ -110,31 +108,25 @@ void Dealer::Update(float delta)
 void Dealer::PostUpdate(float delta)
 {
     PokerSequence sequence = m_pkPokerRule->GetCurPokerSequence();
+    int betIndex = 0;
     switch (sequence) 
     {
-    case POKERSEQUENCE_BET1:
-        CalcMoney(1);
-        if (!m_pkPlayerMan->IsBetDone(1))
-            m_pkPlayerMan->BetTurnOver();
-        break;
-    case POKERSEQUENCE_BET2:
-        CalcMoney(2);
-        if (!m_pkPlayerMan->IsBetDone(2))
-            m_pkPlayerMan->BetTurnOver();
-        break;
-    case POKERSEQUENCE_BET3:
-        CalcMoney(3);
-        if (!m_pkPlayerMan->IsBetDone(3))
-            m_pkPlayerMan->BetTurnOver();
-        break;
-    case POKERSEQUENCE_BET4:
-        CalcMoney(4);
-        if (!m_pkPlayerMan->IsBetDone(4))
-            m_pkPlayerMan->BetTurnOver();
-        break;
-    default: 
-        break;
+    case POKERSEQUENCE_BET1: betIndex = 1; break;
+    case POKERSEQUENCE_BET2: betIndex = 2; break;
+    case POKERSEQUENCE_BET3: betIndex = 3; break;
+    case POKERSEQUENCE_BET4: betIndex = 4; break;
+    default: break;
     }
+
+    if (betIndex > 0)
+    {
+        CalcMoney(betIndex);
+        bool notAlone = !m_pkPlayerMan->IsLeaveAlone();
+        bool notAllBetting = !m_pkPlayerMan->IsBetDone(betIndex);
+        if (notAlone && notAllBetting)
+            m_pkPlayerMan->BetTurnOver(betIndex);
+    }
+
 
     {
         // for debug
@@ -179,7 +171,7 @@ void Dealer::Settle()
         // 모두 die 상태?
         return;
     }
-    m_nLastWinnerIndex = winner;
+    m_kDealerInfo.nLastWinnerIndex = winner;
     
     Player& player = m_pkPlayerMan->GetPlayerByIndex(winner);
 
@@ -188,6 +180,9 @@ void Dealer::Settle()
         return;
     }
     
+    m_kDealerInfo.nLastWinnerPrice = m_kTableInfo.titleMoney;
+    if (m_kDealerInfo.nLastWinnerPrice > m_kDealerInfo.nMostMoney)
+        m_kDealerInfo.nMostMoney = m_kDealerInfo.nLastWinnerPrice;
     player.AddMoney(m_kTableInfo.titleMoney);
     ResetTitleMoney();
 }
@@ -204,7 +199,7 @@ unsigned int Dealer::GetSeedMoney()
 
 int Dealer::GetLastWinnerIndex()
 {
-    return m_nLastWinnerIndex;
+    return m_kDealerInfo.nLastWinnerIndex;
 }
 
 void Dealer::ResetRaiseCount()
@@ -350,6 +345,11 @@ void Dealer::AddRaiseCount()
 unsigned int Dealer::GetRaiseCount()
 {
     return m_kTableInfo.raiseCount;
+}
+
+void Dealer::GetDealerInfo(DealerInfo& dealerInfo)
+{
+    dealerInfo = m_kDealerInfo;
 }
 
 void Dealer::GetTableInfo(TableInfo& tableInfo)

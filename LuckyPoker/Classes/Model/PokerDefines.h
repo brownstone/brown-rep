@@ -15,17 +15,21 @@ enum PokerSequence
 	POKERSEQUENCE_CHOICE_DONE,
 	POKERSEQUENCE_DEAL1,
 	POKERSEQUENCE_DEAL1_DONE,
-	POKERSEQUENCE_BET1,
+    POKERSEQUENCE_BET1,
+    POKERSEQUENCE_BET1_DONE,
 	POKERSEQUENCE_DEAL2,
 	POKERSEQUENCE_DEAL2_DONE,
-	POKERSEQUENCE_BET2,
+    POKERSEQUENCE_BET2,
+    POKERSEQUENCE_BET2_DONE,
 	POKERSEQUENCE_DEAL3,
 	POKERSEQUENCE_DEAL3_DONE,
-	POKERSEQUENCE_BET3,
+    POKERSEQUENCE_BET3,
+    POKERSEQUENCE_BET3_DONE,
 	POKERSEQUENCE_DEAL4, // Hidden
 	POKERSEQUENCE_SHOW_HIDDEN,
 	POKERSEQUENCE_DEAL4_DONE,
-	POKERSEQUENCE_BET4,
+    POKERSEQUENCE_BET4,
+    POKERSEQUENCE_BET4_DONE,
 	POKERSEQUENCE_HILOW,
 	POKERSEQUENCE_OPEN,
 	POKERSEQUENCE_SETTLE, //정산
@@ -44,17 +48,21 @@ const static char* PokerSequenceStr [] = {
 	"CHOICE_DONE",
 	"DEAL1",
 	"DEAL1_DONE",
-	"BET1",
+    "BET1",
+    "BET1_DONE",
 	"DEAL2",
 	"DEAL2_DONE",
-	"BET2",
+    "BET2",
+    "BET2_DONE",
 	"DEAL3",
 	"DEAL3_DONE",
-	"BET3",
+    "BET3",
+    "BET3_DONE",
 	"DEAL4", // Hidden
 	"SHOW_HIDDEN",
 	"DEAL4_DONE",
-	"BET4",
+    "BET4",
+    "BET4_DONE",
 	"HILOW",
 	"OPEN",
 	"SETTLE", //정산
@@ -470,6 +478,31 @@ struct PlayerManInfo
         changed |= (turnCount != rhs.turnCount);
 
         return changed;
+    }
+};
+
+struct DealerInfo
+{
+    unsigned int nMasterPlayerKey;
+    unsigned int nGameCount;
+    unsigned int nMostMoney;
+    unsigned int nLastWinnerIndex; // 다음판에 패를 나눠줄때 이넘 다음부터
+    unsigned int nLastWinnerPrice;
+    DealerInfo()
+    {
+        Init();
+    }
+    void Init()
+    {
+        nMasterPlayerKey = 0;
+        nGameCount = 0;
+        nMostMoney = 0;
+        nLastWinnerIndex = 0; // 다음판에 패를 나눠줄때 이넘 다음부터
+        nLastWinnerPrice = 0;
+    }
+    void Clear()
+    {
+
     }
 };
 

@@ -62,7 +62,12 @@ void MainLogic::GetPlayerJokboInfo(JokboResult jokboInfos[])
 	m_kPlayerMan.GetPlayerJokbo(jokboInfos);
 }
 
-void MainLogic::GetDealerInfo(TableInfo& tableInfo)
+void MainLogic::GetDealerInfo(DealerInfo& dealerInfo)
+{
+    m_kDealer.GetDealerInfo(dealerInfo);
+}
+
+void MainLogic::GetTableInfo(TableInfo& tableInfo)
 {
     m_kDealer.GetTableInfo(tableInfo);
 }

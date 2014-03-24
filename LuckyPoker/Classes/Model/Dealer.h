@@ -26,7 +26,8 @@ public:
     void AddRaiseCount();
     unsigned int GetRaiseCount();
 
-	void GetTableInfo(TableInfo& tableInfo);
+    void GetDealerInfo(DealerInfo& dealerInfo);
+    void GetTableInfo(TableInfo& tableInfo);
 
     
 protected:
@@ -43,20 +44,17 @@ protected:
     
     
 private:
-    unsigned int        m_nMasterPlayerKey;
-    unsigned int        m_nGameCount;
-    unsigned int        m_nMostMoney;
-    unsigned int        m_nLastWinnerIndex; // 다음판에 패를 나눠줄때 이넘 다음부터
+    DealerInfo          m_kDealerInfo;
+    //unsigned int        m_nMasterPlayerKey;
+    //unsigned int        m_nGameCount;
+    //unsigned int        m_nMostMoney;
+    //unsigned int        m_nLastWinnerIndex; // 다음판에 패를 나눠줄때 이넘 다음부터
+    //unsigned int        m_nLastWinnerPrice;
     Card::PokerCard	    m_kCardDeck[Card::MAX_CARD_COUNT];
     unsigned int        m_nCardDeckIndex;
 
 	// table data
 	TableInfo           m_kTableInfo;
-    //unsigned int        m_nSeedMoney;
-    //unsigned int        m_nTitleMoney;
-    //unsigned int        m_nCallMoney;
-    //unsigned int        m_nRaiseCount; // 레이스 카운트 이것으로 Both인지를 알수 있다.
-    
     
     PokerRule*          m_pkPokerRule;
     PlayerMan*          m_pkPlayerMan;

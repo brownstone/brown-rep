@@ -59,6 +59,8 @@ void PlayerMan::Update(float delta)
 		}
 		case POKERSEQUENCE_SHUFFLE:
 		{
+            if (start)
+                DoSchoolMoney();
 			static float fDelayTime = 0.0f;
 			fDelayTime += delta;
 
@@ -67,8 +69,6 @@ void PlayerMan::Update(float delta)
 				break;
 			}
 			fDelayTime = 0.f;
-
-			DoSchoolMoney();
 			break;
 		}
 		case POKERSEQUENCE_CHOICE:
@@ -90,6 +90,7 @@ void PlayerMan::Update(float delta)
             m_kPlayerManInfo.turnCount = 0;
             m_kPlayerManInfo.turnIndex = m_kPlayerManInfo.sunPlayerIndex;
             bool myTurn = (m_kPlayerManInfo.turnIndex == m_kPlayerManInfo.curPlayerIndex);
+            myTurn = false;
             m_akPokerPlayer[m_kPlayerManInfo.turnIndex].OnEnterTurn(myTurn);
             break;
         }
@@ -200,7 +201,7 @@ void PlayerMan::EachPlayerBetting(int betIndex, float delta)
     }
 }
 
-void PlayerMan::BetTurnOver()
+void PlayerMan::BetTurnOver(int betIndex)
 {
     Player& player = m_akPokerPlayer[m_kPlayerManInfo.turnIndex];
     if (player.IsBettingDone())
@@ -212,12 +213,15 @@ void PlayerMan::BetTurnOver()
 
 void PlayerMan::DoSchoolMoney()
 {
-	if (m_akPokerPlayer[m_kPlayerManInfo.turnIndex].GetTempSchoolMoney() > 0)
-		return;
+    for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+    {
+	    if (m_akPokerPlayer[m_kPlayerManInfo.turnIndex].GetTempSchoolMoney() > 0)
+		    continue;
 
-	unsigned int seedMoney = m_pkDealer->GetSeedMoney();
-	m_akPokerPlayer[m_kPlayerManInfo.turnIndex].CalcSchoolMoney(seedMoney);
-	SetTurnOver();
+	    unsigned int seedMoney = m_pkDealer->GetSeedMoney();
+	    m_akPokerPlayer[m_kPlayerManInfo.turnIndex].CalcSchoolMoney(seedMoney);
+	    SetTurnOver();
+    }
 }
 
 bool PlayerMan::IsSchoolMoneyDone()
@@ -424,6 +428,8 @@ int PlayerMan::GetHighJokboPlayer()
 	int highJokboPlayerIndex = -1;
 	for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
 	{
+        if (m_akPokerPlayer[i].IsDie())
+            continue;
 		const JokboResult kJokboResult = m_akPokerPlayer[i].GetJokboResult();
 		if (kJokboResult.eJokbo == JOKBO_NONE)
 			continue;
@@ -435,8 +441,10 @@ int PlayerMan::GetHighJokboPlayer()
 
 	for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
 	{
-		if (m_akPokerPlayer[i].GetJokboResult().eJokbo == JOKBO_NONE)
-			continue;
+        if (m_akPokerPlayer[i].IsDie())
+            continue;
+        if (m_akPokerPlayer[i].GetJokboResult().eJokbo == JOKBO_NONE)
+            continue;
 
 		if (highJokboPlayerIndex == i)
 			continue;
@@ -504,6 +512,9 @@ void PlayerMan::SetTurnOver()
     m_akPokerPlayer[m_kPlayerManInfo.turnIndex].OnLeaveTurn();
 	m_kPlayerManInfo.turnIndex = uiNextTurnIndex;
     bool myTurn = (m_kPlayerManInfo.turnIndex == m_kPlayerManInfo.curPlayerIndex);
+    PokerSequence sequence = m_pkPokerRule->GetCurPokerSequence();
+    if (sequence == POKERSEQUENCE_BET1)
+        myTurn = false;
     m_akPokerPlayer[m_kPlayerManInfo.turnIndex].OnEnterTurn(myTurn);
 }
 

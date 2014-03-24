@@ -25,6 +25,12 @@ protected:
     bool m_bSequenceChanged;
     float m_fAccumTime;
 
+    float m_fFirstDealTime;
+    float m_fDeal1Time;
+    float m_fDeal2Time;
+    float m_fDeal3Time;
+    float m_fDeal4Time;
+
 	void ChangeToSequence(PokerSequence seq);
     
 private:
