@@ -62,6 +62,7 @@ protected:
 	void ClearBettingInfo();
 	void IsAllCall() const;
 	void SetTurnOver();
+    void AlivePlayer();
 
 
 protected:

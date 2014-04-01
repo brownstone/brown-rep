@@ -452,6 +452,7 @@ struct PlayerManInfo
 	unsigned int	leftTopIndex;
 	unsigned int	turnIndex;
     unsigned int    turnCount;
+    bool            alivePlayers[MAX_POKERPLAYER_COUNT];
 
 	PlayerManInfo()
 	{
@@ -469,6 +470,10 @@ struct PlayerManInfo
 		leftTopIndex = INVALID_PLAYER_INDEX;
 		turnIndex = INVALID_PLAYER_INDEX;
         turnCount = 0;
+        for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+        {
+            alivePlayers[i] = false;
+        }
 	}
     bool Changed(const PlayerManInfo& rhs)
     {
@@ -476,6 +481,10 @@ struct PlayerManInfo
         changed |= (sunPlayerIndex != rhs.sunPlayerIndex);
         changed |= (turnIndex != rhs.turnIndex);
         changed |= (turnCount != rhs.turnCount);
+        for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+        {
+            changed |= alivePlayers[i] != rhs.alivePlayers[i];
+        }
 
         return changed;
     }

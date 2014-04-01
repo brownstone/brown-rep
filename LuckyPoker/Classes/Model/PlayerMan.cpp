@@ -60,7 +60,10 @@ void PlayerMan::Update(float delta)
 		case POKERSEQUENCE_SHUFFLE:
 		{
             if (start)
+            {
+                AlivePlayer();
                 DoSchoolMoney();
+            }
 			static float fDelayTime = 0.0f;
 			fDelayTime += delta;
 
@@ -78,6 +81,7 @@ void PlayerMan::Update(float delta)
 		}
         case POKERSEQUENCE_CHOICE_DONE:
         {
+            AlivePlayer();
             CalcJokboResult();
             FindSun();
             m_kPlayerManInfo.turnIndex = m_kPlayerManInfo.sunPlayerIndex;
@@ -99,6 +103,11 @@ void PlayerMan::Update(float delta)
 			EachPlayerBetting(1, delta);
 			break;
 		}
+        case POKERSEQUENCE_BET1_DONE:
+        {
+            AlivePlayer();
+            break;
+        }
         case POKERSEQUENCE_DEAL2_DONE:
         {
             CalcJokboResult();
@@ -114,6 +123,11 @@ void PlayerMan::Update(float delta)
 			EachPlayerBetting(2, delta);
 			break;
 		}
+        case POKERSEQUENCE_BET2_DONE:
+        {
+            AlivePlayer();
+            break;
+        }
         case POKERSEQUENCE_DEAL3_DONE:
         {
             CalcJokboResult();
@@ -129,6 +143,11 @@ void PlayerMan::Update(float delta)
 			EachPlayerBetting(3, delta);
 			break;
 		}
+        case POKERSEQUENCE_BET3_DONE:
+        {
+            AlivePlayer();
+            break;
+        }
         case POKERSEQUENCE_DEAL4_DONE:
         {
             // Bet3 중에 플레이어가 Die할 수도 있음 그래서 선이 바뀔수도 있음.
@@ -467,6 +486,21 @@ void PlayerMan::FindSun()
         highJokboPlayerIndex = 0;
     }
     m_kPlayerManInfo.sunPlayerIndex = highJokboPlayerIndex;
+}
+
+void PlayerMan::AlivePlayer()
+{
+    for (unsigned int ui = 0; ui < MAX_POKERPLAYER_COUNT; ui++)
+    {
+        m_kPlayerManInfo.alivePlayers[ui] = false;
+
+        if (m_akPokerPlayer[ui].GetPlayerState() == Player::PLAYERSTATE_NONE)
+            continue;
+        if (m_akPokerPlayer[ui].IsDie())
+            continue;
+
+        m_kPlayerManInfo.alivePlayers[ui] = true;
+    }
 }
 
 void PlayerMan::CalcJokboResult()

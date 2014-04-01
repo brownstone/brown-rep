@@ -52,6 +52,7 @@ private:
     void ShowTurnSun(bool show);
     void ReadyBtns(int betting);
     void ClearBetString();
+    void ClearJokbo();
 
 
     CCPoint GetPlayerPos(int playerIndex) const;

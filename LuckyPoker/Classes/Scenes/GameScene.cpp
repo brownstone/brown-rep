@@ -597,6 +597,11 @@ void PlayerLayer::update(float delta)
             OnCelebrationWinnerStart();
         if (seq == POKERSEQUENCE_END || m_kPokerSequence == POKERSEQUENCE_RESULT)
             OnCelebrationWinnerEnd();
+        if (seq == POKERSEQUENCE_END)
+        {
+            ClearBetString();
+            ClearJokbo();
+        }
 
 
 		DisplaySeq(seq);
@@ -764,20 +769,16 @@ void PlayerLayer::OnThrowCard(int index)
         endThrowCardIndex = 7;
     }
 
-    if (index == 1 || index == 2 || index == 3 || index == 3)
+    if (index == 1 || index == 2 || index == 3 || index == 4)
     {
         for (int cardIndex = startThrowCardIndex; cardIndex < endThrowCardIndex; cardIndex++)
         {
-            for (unsigned int ui = m_kPlayerManInfo.turnIndex; ui < m_kPlayerManInfo.turnIndex + MAX_POKERPLAYER_COUNT; ui++)
+            for (unsigned int ui = 0; ui < MAX_POKERPLAYER_COUNT; ui++)
             {
-                unsigned int playerIndex = ui;
-                if (playerIndex >= MAX_POKERPLAYER_COUNT)
-                    playerIndex -= MAX_POKERPLAYER_COUNT;
-
-                if (m_kPlayerInfos[playerIndex].bDie)
+                if (m_kPlayerManInfo.alivePlayers[ui] == false)
                     continue;
 
-                CCSprite* cardSprite = (CCSprite*)getChildByTag(GetCardSpriteTag(playerIndex, cardIndex));
+                CCSprite* cardSprite = (CCSprite*)getChildByTag(GetCardSpriteTag(ui, cardIndex));
                 cardSprite->setVisible(false);
             }
         }
@@ -792,7 +793,7 @@ void PlayerLayer::OnThrowCard(int index)
             if (playerIndex >= MAX_POKERPLAYER_COUNT)
                 playerIndex -= MAX_POKERPLAYER_COUNT;
 
-            if (m_kPlayerInfos[playerIndex].bDie)
+            if (m_kPlayerManInfo.alivePlayers[playerIndex] == false)
                 continue;
 
             CCSprite* backcard = CCSprite::create(GetCardImgName(0));
@@ -989,6 +990,14 @@ void PlayerLayer::ClearBetString()
     }
 }
 
+void PlayerLayer::ClearJokbo()
+{
+    for (int i = 0; i < MAX_POKERPLAYER_COUNT; i++)
+    {
+        CCLabelTTF* jokboLabel = (CCLabelTTF*)getChildByTag(GetJokboLabelTag(i, 0));
+        jokboLabel->setString("");
+    }
+}
 const char* PlayerLayer::GetCardImgName(int num)
 {
     static const char* cardImgName[] = {
